@@ -42,7 +42,7 @@ void hilevel_handler_rst(ctx_t* ctx) {
  * handles the following hardware (low-level) interrupts
  *   - Timer innterrupt
  */
-void hilevel_handler_irq() {
+void hilevel_handler_irq(ctx_t* ctx) {
   // Read  the interrupt identifier
   uint32_t id = GICC0->IAR;
 
