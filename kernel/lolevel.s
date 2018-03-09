@@ -31,8 +31,7 @@ lolevel_handler_rst:
     msr   spsr, r0                @ move     USR mode        CPSR
     ldmia sp, { r0-r12, sp, lr }^ @ restore  USR mode registers
     add   sp, sp, #60             @ update   SVC mode SP
-    @ movs  pc, lr                  @ return from interrupt
-    b     .                       @ halt
+    movs  pc, lr                  @ return from interrupt
 
 lolevel_handler_irq:
     sub   lr, lr, #4              @ correct return address
