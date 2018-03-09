@@ -48,10 +48,7 @@ void hilevel_handler_irq() {
 
   // handle timer interrupt
   if (id == GIC_SOURCE_TIMER0) {
-    PL011_putc(UART0, 'T', true);
-
-    // invoke scheduler in SVC mode
-    yield();
+    scheduler(ctx);
 
     // reset timer
     TIMER0->Timer1IntClr = 0x01;
