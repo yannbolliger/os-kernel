@@ -6,7 +6,7 @@
  * Configure system at start
  *  - initialise timer for pre-emptive multitasking
  */
-void hilevel_handler_rst() {
+void hilevel_handler_rst(ctx_t* ctx) {
 
   // Timer config
   TIMER0->Timer1Load  = TIMER_INTERVAL_TICKS;
@@ -31,6 +31,8 @@ void hilevel_handler_rst() {
   GICD0->CTLR         = 0x00000001;
 
   int_enable_irq();
+
+  scheduler_rst(ctx);
 
   return;
 }
@@ -71,9 +73,9 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
   switch (svc_code) {
 
-    // yield()
+    // yield() (from timer IRQ)
     case SYS_YIELD: {
-      //scheduler(ctx);
+      scheduler(ctx);
       break;
     }
 
