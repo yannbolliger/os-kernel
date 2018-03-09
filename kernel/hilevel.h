@@ -34,10 +34,10 @@ typedef enum {
 // Execution context type
 // (all the saved registers in svc mode, reverse order)
 typedef struct {
-  uint32_t cpsr,
-  uint32_t pc,
-  uint32_t gpr[13],
-  uint32_t sp,
+  uint32_t cpsr;
+  uint32_t pc;
+  uint32_t gpr[13];
+  uint32_t sp;
   uint32_t lr;
 } ctx_t;
 

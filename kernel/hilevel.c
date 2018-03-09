@@ -73,7 +73,7 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
     // yield()
     case SYS_YIELD: {
-      scheduler(ctx);
+      //scheduler(ctx);
       break;
     }
 
