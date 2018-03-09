@@ -1,9 +1,3 @@
-/* Copyright (C) 2017 Daniel Page <csdsp@bristol.ac.uk>
- *
- * Use of this source code is restricted per the CC BY-NC-ND license, a copy of 
- * which can be found via http://creativecommons.org (and should be included as 
- * LICENSE.txt within the associated archive or repository).
- */
 
 #ifndef __HILEVEL_H
 #define __HILEVEL_H
@@ -14,9 +8,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// Include functionality relating to the   kernel.
+// Include device definitions
+#include "SP804.h"
 
+// Include functionality relating to the   kernel.
 #include "lolevel.h"
 #include     "int.h"
+
+// interval for pre-emptive multitasking: 2^20 ticks
+#define TIMER_INTERVAL_TICKS (0x00100000);
 
 #endif
