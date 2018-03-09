@@ -35,6 +35,11 @@ void hilevel_handler_rst() {
   return;
 }
 
+/**
+ * IRQ interrupt handler
+ * handles the following hardware (low-level) interrupts
+ *   - Timer innterrupt
+ */
 void hilevel_handler_irq() {
   // Read  the interrupt identifier
   uint32_t id = GICC0->IAR;
@@ -42,6 +47,9 @@ void hilevel_handler_irq() {
   // handle timer interrupt
   if (id == GIC_SOURCE_TIMER0) {
     PL011_putc(UART0, 'T', true);
+
+    // invoke scheduler in SVC mode
+    yield();
 
     // reset timer
     TIMER0->Timer1IntClr = 0x01;
@@ -53,6 +61,41 @@ void hilevel_handler_irq() {
   return;
 }
 
-void hilevel_handler_svc() {
+
+/**
+ * SVC interrupt handler,
+ * responsible for handling all syscall (SVC) interrupts.
+ * See defined interrupts in libc.h
+ */
+void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
+
+  switch (svc_code) {
+
+    // yield()
+    case SYS_YIELD: {
+      scheduler(ctx);
+      break;
+    }
+
+    // write(fd, x, n)
+    case SYS_WRITE: {
+      int fd  = (int)  (ctx->gpr[0]);
+      char* x = (char*)(ctx->gpr[1]);
+      int n   = (int)  (ctx->gpr[2]);
+
+      for (int i = 0; i < n; i++) {
+        PL011_putc(UART0, *x++, true);
+      }
+
+      ctx->gpr[0] = n;
+      break;
+    }
+
+    // unknown/unsupported
+    default: {
+      break;
+    }
+  }
+
   return;
 }
