@@ -3,7 +3,7 @@
 
 all: min_unit
 
-min_unit: min_unit.o ../kernel/scheduler.o scheduler_tests.c
+min_unit: min_unit.o ../kernel/scheduler.o scheduler_tests.o
 
 
 
