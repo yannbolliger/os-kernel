@@ -4,10 +4,10 @@
 #include "min_unit.h"
 
 int tests_run = 0;
+extern int all_tests_scheduler();
 
 int all_tests() {
-  _verify(square_01);
-  return 0;
+  return all_tests_scheduler();
 }
 
 int main(int argc, char **argv) {

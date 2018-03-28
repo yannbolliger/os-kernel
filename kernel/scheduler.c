@@ -25,13 +25,13 @@ void scheduler_rst(ctx_t* ctx) {
   memset(&pcb_table, 0, sizeof(pcb_table_t));
 
   // populate with two processes
-  pcb_table.pcb[0].pid      = 1;
+  pcb_table.pcb[0].pid      = 0;
   pcb_table.pcb[0].status   = STATUS_READY;
   pcb_table.pcb[0].ctx.cpsr = 0x50;
   pcb_table.pcb[0].ctx.pc   = (uint32_t) (&main_P3);
   pcb_table.pcb[0].ctx.sp   = (uint32_t) (&tos_P3);
 
-  pcb_table.pcb[1].pid      = 2;
+  pcb_table.pcb[1].pid      = 1;
   pcb_table.pcb[1].status   = STATUS_READY;
   pcb_table.pcb[1].ctx.cpsr = 0x50;
   pcb_table.pcb[1].ctx.pc   = (uint32_t) (&main_P4);
