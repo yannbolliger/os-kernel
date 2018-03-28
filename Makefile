@@ -1,12 +1,12 @@
 # Copyright (C) 2017 Daniel Page <csdsp@bristol.ac.uk>
 #
-# Use of this source code is restricted per the CC BY-NC-ND license, a copy of 
-# which can be found via http://creativecommons.org (and should be included as 
+# Use of this source code is restricted per the CC BY-NC-ND license, a copy of
+# which can be found via http://creativecommons.org (and should be included as
 # LICENSE.txt within the associated archive or repository).
 
 # part 1: variables
 
- PROJECT_PATH     = $(shell find . -mindepth 1 -maxdepth 1 -type d)
+ PROJECT_PATH     = $(shell find . -mindepth 1 -maxdepth 1 -type d -not -path ./test)
  PROJECT_SOURCES  = $(shell find ${PROJECT_PATH} -name *.c -o -name *.s)
  PROJECT_HEADERS  = $(shell find ${PROJECT_PATH} -name *.h             )
  PROJECT_OBJECTS  = $(addsuffix .o, $(basename ${PROJECT_SOURCES}))
@@ -17,7 +17,7 @@
  QEMU_UART        = stdio
 #QEMU_UART       += telnet:127.0.0.1:1235,server
 #QEMU_UART       += telnet:127.0.0.1:1236,server
- QEMU_DISPLAY     = -nographic -display none 
+ QEMU_DISPLAY     = -nographic -display none
 #QEMU_DISPLAY     =            -display  sdl
 
  LINARO_PATH      = /usr/local/gcc-linaro-5.1-2015.08-x86_64_arm-eabi
@@ -54,6 +54,6 @@ kill-gdb    :
 	@-killall --quiet --user ${USER} ${LINARO_PREFIX}-gdb
 
 clean       :
-	@rm -f core ${PROJECT_OBJECTS} ${PROJECT_TARGETS}
+	rm -f core ${PROJECT_OBJECTS} ${PROJECT_TARGETS}
 
 include Makefile.console
