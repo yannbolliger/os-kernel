@@ -10,7 +10,6 @@ void hilevel_handler_rst(ctx_t* ctx) {
 
   // Timer config
   TIMER0->Timer1Load  = TIMER_INTERVAL_TICKS;
-
   // 32-bit timer
   TIMER0->Timer1Ctrl  = 0x00000002;
   // periodic timer
@@ -32,7 +31,7 @@ void hilevel_handler_rst(ctx_t* ctx) {
 
   int_enable_irq();
 
-  scheduler_rst(ctx);
+  sched_rst(ctx);
 
   return;
 }
@@ -48,7 +47,9 @@ void hilevel_handler_irq(ctx_t* ctx) {
 
   // handle timer interrupt
   if (id == GIC_SOURCE_TIMER0) {
-    scheduler(ctx);
+    sched_tick();
+
+    if (sched_need_resched()) sched(ctx);
 
     // reset timer
     TIMER0->Timer1IntClr = 0x01;
@@ -72,7 +73,7 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
     // yield() (from timer IRQ)
     case SYS_YIELD: {
-      scheduler(ctx);
+      sched(ctx);
       break;
     }
 

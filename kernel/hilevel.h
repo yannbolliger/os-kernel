@@ -18,6 +18,6 @@
 #include "lolevel.h"
 #include "int.h"
 #include "kernel.h"
-#include "scheduler.h"
+#include "sched.h"
 
  #endif

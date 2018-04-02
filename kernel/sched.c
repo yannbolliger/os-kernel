@@ -1,7 +1,7 @@
 
 
 
-#include "scheduler.h"
+#include "sched.h"
 
 extern void main_P3();
 extern void main_P4();
@@ -23,6 +23,10 @@ void add_process_rq(pid_t pid, uint64_t deadline, uint64_t timeslice) {
   global_rq.tail = (global_rq.tail + 1) % PCB_TABLE_SIZE;
 
   return;
+}
+
+void schedule_process_rq(pid_t pid) {
+
 }
 
 void interrupt_process (pid_t pid, ctx_t* ctx) {
@@ -67,7 +71,7 @@ pid_t next_process_ready () {
  * - the PC and SP values matche the entry point and top of stack.
  */
 
-void scheduler_rst(ctx_t* ctx) {
+void sched_rst(ctx_t* ctx) {
 
   // reset PCB table
   memset(&pcb_table, 0, sizeof(pcb_table_t));
@@ -92,7 +96,16 @@ void scheduler_rst(ctx_t* ctx) {
   return;
 }
 
-void scheduler(ctx_t* ctx) {
+void sched_tick() {
+  global_rq.jiffies++;
+  return;
+}
+
+void sched_need_resched() {
+  return;
+}
+
+void sched(ctx_t* ctx) {
 
   interrupt_process(pcb_table.executing_pid, ctx);
   dispatch_process(next_process_ready(), ctx);

@@ -64,13 +64,15 @@ typedef struct {
   rq_entry_t run_queue[PCB_TABLE_SIZE];
   size_t head;
   size_t tail;
+  uint64_t jiffies;
 } rq_t;
 
 /**
  * Scheduler calls
  */
 
-void scheduler_rst(ctx_t* ctx);
-void scheduler(ctx_t* ctx);
+void sched_rst(ctx_t* ctx);
+void sched_tick();
+void sched(ctx_t* ctx);
 
 #endif

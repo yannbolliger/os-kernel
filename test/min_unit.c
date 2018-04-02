@@ -4,10 +4,10 @@
 #include "min_unit.h"
 
 int tests_run = 0;
-extern int all_tests_scheduler();
+extern int all_tests_sched();
 
 int all_tests() {
-  return all_tests_scheduler();
+  return all_tests_sched();
 }
 
 int main(int argc, char **argv) {
