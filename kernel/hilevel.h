@@ -20,9 +20,4 @@
 #include "kernel.h"
 #include "scheduler.h"
 
-// interval for pre-emptive multitasking: 2^20 ticks
-#define TIMER_INTERVAL_TICKS (0x00100000)
-
-
-
-#endif
+ #endif
