@@ -14,6 +14,7 @@ typedef struct _rq_entry_t {
   pid_t pid;
   uint64_t deadline;
   uint64_t timeslice;
+  struct _rq_entry_t* next;
 } rq_entry_t;
 
 typedef struct {
@@ -21,6 +22,7 @@ typedef struct {
   size_t head;
   size_t tail;
   uint64_t jiffies;
+  rq_entry_t* edt;
 } rq_t;
 
 

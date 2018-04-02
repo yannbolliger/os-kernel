@@ -1,5 +1,5 @@
 
-
+CFLAGS+= -g
 
 all: min_unit
 
