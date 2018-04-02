@@ -7,16 +7,12 @@
 /**
  * dummy declarations to fulfill sched.c requirements
  */
-void main_P3() {
+void main_console() {
   return;
 }
-void main_P4() {
-  return;
-}
-uint32_t tos_P3 = 0;
-uint32_t tos_P4 = 0;
 
 extern pcb_table_t pcb_table;
+
 
 /**
  * TESTS

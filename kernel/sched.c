@@ -3,20 +3,15 @@
 #include "sched.h"
 
 
-extern void main_P3();
-extern void main_P4();
-extern uint32_t tos_P3;
-extern uint32_t tos_P4;
-
-pcb_table_t pcb_table = {0};
+extern void main_console();
 
 
 void run_next_process(ctx_t* ctx) {
   pid_t edp = earliest_deadline_pid_rq();
-  pcb_t* to_dispatch_pcb = &pcb_table.pcb[edp];
+  pcb_t* to_dispatch_pcb = pcb_of(edp);
 
   remove_earliest_for_dispatch_rq(to_dispatch_pcb);
-  pcb_table.executing_pid = dispatch_process(to_dispatch_pcb, ctx);
+  dispatch_process(edp, ctx);
 }
 
 /**
@@ -29,31 +24,15 @@ void run_next_process(ctx_t* ctx) {
  */
 
 void sched_rst(ctx_t* ctx) {
-
-  // reset PCB table
-  memset(&pcb_table, 0, sizeof(pcb_table_t));
-
-  // populate with two processes
-  pcb_table.pcb_size = 1;
-
-  pcb_table.pcb[0].pid      = 0;
-  pcb_table.pcb[0].ctx.cpsr = 0x50;
-  pcb_table.pcb[0].ctx.pc   = (uint32_t)(&main_P3);
-  pcb_table.pcb[0].ctx.sp   = (uint32_t)(&tos_P3);
-  sched_process_rq(0);
-
-  pcb_table.pcb[1].pid      = 1;
-  pcb_table.pcb[1].ctx.cpsr = 0x50;
-  pcb_table.pcb[1].ctx.pc   = (uint32_t)(&main_P4);
-  pcb_table.pcb[1].ctx.sp   = (uint32_t)(&tos_P4);
-  sched_process_rq(1);
+  pid_t p1 = create_process(0x50, (uint32_t) (&main_console));
+  sched_process_rq(p1);
 
   run_next_process(ctx);
   return;
 }
 
 void sched_tick() {
-  pcb_table.pcb[pcb_table.executing_pid].timeslice--;
+  pcb_of(executing_process())->timeslice--;
   sched_tick_rq();
   return;
 }
@@ -64,7 +43,7 @@ void sched_tick() {
  * - it's timeslice is over
  */
 int sched_need_resched() {
-  return pcb_table.pcb[pcb_table.executing_pid].timeslice == 0;
+  return pcb_of(executing_process())->timeslice == 0;
 }
 
 /**
@@ -72,14 +51,14 @@ int sched_need_resched() {
  * Preempt runnning process and dispatch the next process with the highest prio.
  */
 void sched(ctx_t* ctx) {
-  pcb_t* exec = &pcb_table.pcb[pcb_table.executing_pid];
+  pcb_t* exec = pcb_of(executing_process());
 
   if (exec->timeslice == 0) sched_process_rq(exec->pid);
   else add_process_rq(exec->pid, exec->timeslice, exec->deadline);
 
   pid_t edp = earliest_deadline_pid_rq();
   if (edp != exec->pid) {
-    interrupt_process(exec, ctx);
+    interrupt_executing_process(ctx);
   }
 
   run_next_process(ctx);

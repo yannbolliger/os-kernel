@@ -12,20 +12,6 @@
 #include "process.h"
 #include "sched_rq.h"
 
-/**
- * System Constants
- */
-
-
-/**
- * Type Definitions Scheduler
- */
-
-typedef struct {
-  pcb_t pcb[MAX_NUMBER_PROCESSES];
-  size_t pcb_size;
-  pid_t executing_pid;
-} pcb_table_t;
 
 /**
  * Scheduler calls
