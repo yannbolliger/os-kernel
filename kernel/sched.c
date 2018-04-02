@@ -11,7 +11,7 @@ extern uint32_t tos_P4;
 pcb_table_t pcb_table = {0};
 rq_t global_rq = {0};
 
-void add_process_rq(pid_t pid, uint64_t deadline, uint64_t timeslice) {
+void add_process_rq(pid_t pid, uint64_t timeslice, uint64_t deadline) {
   pcb_table.pcb[pid].status = STATUS_READY;
 
   rq_entry_t new_entry = {0};
@@ -25,8 +25,12 @@ void add_process_rq(pid_t pid, uint64_t deadline, uint64_t timeslice) {
   return;
 }
 
-void schedule_process_rq(pid_t pid) {
+void sched_process_rq(pid_t pid) {
+  uint64_t timeslice = TIME_SLICE;
+  uint64_t deadline = global_rq.jiffies + timeslice;
 
+  add_process_rq(pid, timeslice, deadline);
+  return;
 }
 
 void interrupt_process (pid_t pid, ctx_t* ctx) {

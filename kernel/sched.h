@@ -18,6 +18,9 @@
 // Maximum number of processes
 #define PCB_TABLE_SIZE (50)
 
+// Smallest possible time slice each process gets [1/100s]
+#define TIME_SLICE     (60)
+
 /**
  * Type Definitions Scheduler
  */
@@ -73,6 +76,7 @@ typedef struct {
 
 void sched_rst(ctx_t* ctx);
 void sched_tick();
+void sched_need_resched();
 void sched(ctx_t* ctx);
 
 #endif
