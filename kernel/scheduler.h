@@ -54,6 +54,18 @@ typedef struct {
   pid_t executing_pid;
 } pcb_table_t;
 
+typedef struct _rq_entry_t {
+  pid_t pid;
+  uint64_t deadline;
+  uint64_t timeslice;
+} rq_entry_t;
+
+typedef struct {
+  rq_entry_t run_queue[PCB_TABLE_SIZE];
+  size_t head;
+  size_t tail;
+} rq_t;
+
 /**
  * Scheduler calls
  */
