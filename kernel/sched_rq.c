@@ -29,7 +29,7 @@ void add_process_rq(pid_t pid, uint64_t timeslice, uint64_t deadline) {
     else prev->next = new_entry;
   }
 
-  global_rq.tail = (global_rq.tail + 1) % PCB_TABLE_SIZE;
+  global_rq.tail = (global_rq.tail + 1) % MAX_NUMBER_PROCESSES;
   return;
 }
 
@@ -41,8 +41,8 @@ void sched_process_rq(pid_t pid) {
   return;
 }
 
-rq_entry_t* earliest_deadline_process() {
-  return global_rq.edt;
+pid_t earliest_deadline_pid_rq() {
+  return global_rq.edt->pid;
 }
 
 void remove_edp_rq() {
@@ -53,9 +53,20 @@ void remove_edp_rq() {
   // overwrite to_remove in array with first elem of array
   *to_remove = global_rq.run_queue[global_rq.head];
 
-  global_rq.head = (global_rq.head + 1) % PCB_TABLE_SIZE;
+  global_rq.head = (global_rq.head + 1) % MAX_NUMBER_PROCESSES;
 }
 
-void sched_rq_tick() {
+pid_t remove_earliest_for_dispatch_rq(pcb_t* pcb) {
+  rq_entry_t* edt = global_rq.edt;
+
+  pcb->pid       = edt->pid;
+  pcb->timeslice = edt->timeslice;
+  pcb->deadline  = edt->deadline;
+
+  remove_edp_rq();
+  return pcb->pid;
+}
+
+void sched_tick_rq() {
   global_rq.jiffies++;
 }

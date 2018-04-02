@@ -2,6 +2,7 @@
 #include "min_unit.h"
 #include "../kernel/sched_rq.h"
 
+extern void remove_edp_rq();
 extern rq_t global_rq;
 
 /**
@@ -60,7 +61,7 @@ int add_process_rq_order_test() {
 
   _assert_message(
     "Earliest deadline returns correct entry.",
-    earliest_deadline_process()->deadline == 5
+    earliest_deadline_pid_rq() == 12
     );
 
   remove_edp_rq();

@@ -23,7 +23,7 @@ extern pcb_table_t pcb_table;
  */
 
 int sched_rst_test() {
-
+  return 0;
 }
 
 int all_tests_sched() {

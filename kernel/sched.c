@@ -1,7 +1,7 @@
 
 
 #include "sched.h"
-#include "sched_rq.h"
+
 
 extern void main_P3();
 extern void main_P4();
@@ -10,25 +10,13 @@ extern uint32_t tos_P4;
 
 pcb_table_t pcb_table = {0};
 
-void interrupt_process (pid_t pid, ctx_t* ctx) {
-  pcb_t* interrupted = &pcb_table.pcb[pid];
 
-  memcpy(&interrupted->ctx, ctx, sizeof(ctx_t));
-  interrupted->status = STATUS_READY;
+void run_next_process(ctx_t* ctx) {
+  pid_t edp = earliest_deadline_pid_rq();
+  pcb_t* to_dispatch_pcb = &pcb_table.pcb[edp];
 
-  return;
-}
-
-void dispatch_process(rq_entry_t* entry, ctx_t* ctx) {
-  pcb_t* dispatched = &pcb_table.pcb[entry->pid];
-
-  memcpy(ctx, &dispatched->ctx, sizeof(ctx_t));
-  dispatched->status = STATUS_EXECUTING;
-  dispatched->timeslice = entry->timeslice;
-  dispatched->deadline = entry->deadline;
-  pcb_table.executing_pid = entry->pid;
-
-  return;
+  remove_earliest_for_dispatch_rq(to_dispatch_pcb);
+  pcb_table.executing_pid = dispatch_process(to_dispatch_pcb, ctx);
 }
 
 /**
@@ -46,7 +34,7 @@ void sched_rst(ctx_t* ctx) {
   memset(&pcb_table, 0, sizeof(pcb_table_t));
 
   // populate with two processes
-  pcb_table.pcb_size = 2;
+  pcb_table.pcb_size = 1;
 
   pcb_table.pcb[0].pid      = 0;
   pcb_table.pcb[0].ctx.cpsr = 0x50;
@@ -60,13 +48,13 @@ void sched_rst(ctx_t* ctx) {
   pcb_table.pcb[1].ctx.sp   = (uint32_t)(&tos_P4);
   sched_process_rq(1);
 
-  dispatch_process(earliest_deadline_process(), ctx);
+  run_next_process(ctx);
   return;
 }
 
 void sched_tick() {
   pcb_table.pcb[pcb_table.executing_pid].timeslice--;
-  sched_rq_tick();
+  sched_tick_rq();
   return;
 }
 
@@ -89,13 +77,11 @@ void sched(ctx_t* ctx) {
   if (exec->timeslice == 0) sched_process_rq(exec->pid);
   else add_process_rq(exec->pid, exec->timeslice, exec->deadline);
 
-  rq_entry_t* edp_entry = earliest_deadline_process();
-
-  if (edp_entry->pid != exec->pid) {
-    interrupt_process(exec->pid, ctx);
+  pid_t edp = earliest_deadline_pid_rq();
+  if (edp != exec->pid) {
+    interrupt_process(exec, ctx);
   }
 
-  dispatch_process(edp_entry, ctx);
-  remove_edp_rq();
+  run_next_process(ctx);
   return;
 }
