@@ -7,11 +7,14 @@ extern void main_console();
 
 
 void run_next_process(ctx_t* ctx) {
-  pid_t edp = earliest_deadline_pid_rq();
-  pcb_t* to_dispatch_pcb = pcb_of(edp);
+  rq_entry_t* edp = earliest_deadline_rq();
 
-  remove_earliest_for_dispatch_rq(to_dispatch_pcb);
-  dispatch_process(edp, ctx);
+  pcb_t* to_dispatch_pcb = pcb_of(edp->pid);
+  to_dispatch_pcb->deadline = edp->deadline;
+  to_dispatch_pcb->timeslice = edp->timeslice;
+
+  dispatch_process(edp->pid, ctx);
+  remove_entry_rq(edp);
 }
 
 /**
@@ -47,17 +50,23 @@ int sched_need_resched() {
 }
 
 /**
+ * sched_fork
+ */
+
+
+/**
  * Scheduler main function
  * Preempt runnning process and dispatch the next process with the highest prio.
  */
 void sched(ctx_t* ctx) {
   pcb_t* exec = pcb_of(executing_process());
 
+  // determines whether the call is made from the timer or from yield
   if (exec->timeslice == 0) sched_process_rq(exec->pid);
   else add_process_rq(exec->pid, exec->timeslice, exec->deadline);
 
-  pid_t edp = earliest_deadline_pid_rq();
-  if (edp != exec->pid) {
+  rq_entry_t* edp = earliest_deadline_rq();
+  if (edp->pid != exec->pid) {
     interrupt_executing_process(ctx);
   }
 
