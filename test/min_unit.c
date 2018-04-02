@@ -4,10 +4,11 @@
 #include "min_unit.h"
 
 int tests_run = 0;
+extern int all_tests_sched_rq();
 extern int all_tests_sched();
 
 int all_tests() {
-  return all_tests_sched();
+  return all_tests_sched() + all_tests_sched_rq();
 }
 
 int main(int argc, char **argv) {

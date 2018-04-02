@@ -3,7 +3,7 @@ CFLAGS+= -g
 
 all: min_unit
 
-min_unit: min_unit.o ../kernel/sched.o ../kernel/sched_rq.o sched_tests.o
+min_unit: min_unit.o ../kernel/sched.o ../kernel/sched_rq.o sched_tests.o sched_rq_tests.o
 
 
 
