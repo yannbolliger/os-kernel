@@ -49,6 +49,8 @@ typedef struct {
   pid_t pid;
   status_t status;
   ctx_t ctx;
+  uint64_t deadline;
+  uint64_t timeslice;
 } pcb_t;
 
 typedef struct {
@@ -57,26 +59,13 @@ typedef struct {
   pid_t executing_pid;
 } pcb_table_t;
 
-typedef struct _rq_entry_t {
-  pid_t pid;
-  uint64_t deadline;
-  uint64_t timeslice;
-} rq_entry_t;
-
-typedef struct {
-  rq_entry_t run_queue[PCB_TABLE_SIZE];
-  size_t head;
-  size_t tail;
-  uint64_t jiffies;
-} rq_t;
-
 /**
  * Scheduler calls
  */
 
 void sched_rst(ctx_t* ctx);
 void sched_tick();
-void sched_need_resched();
+int  sched_need_resched();
 void sched(ctx_t* ctx);
 
 #endif

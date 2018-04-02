@@ -1,7 +1,7 @@
 
 
-
 #include "sched.h"
+#include "sched_rq.h"
 
 extern void main_P3();
 extern void main_P4();
@@ -9,61 +9,26 @@ extern uint32_t tos_P3;
 extern uint32_t tos_P4;
 
 pcb_table_t pcb_table = {0};
-rq_t global_rq = {0};
-
-void add_process_rq(pid_t pid, uint64_t timeslice, uint64_t deadline) {
-  pcb_table.pcb[pid].status = STATUS_READY;
-
-  rq_entry_t new_entry = {0};
-  new_entry.pid = pid;
-  new_entry.deadline = deadline;
-  new_entry.timeslice = timeslice;
-
-  global_rq.run_queue[global_rq.tail] = new_entry;
-  global_rq.tail = (global_rq.tail + 1) % PCB_TABLE_SIZE;
-
-  return;
-}
-
-void sched_process_rq(pid_t pid) {
-  uint64_t timeslice = TIME_SLICE;
-  uint64_t deadline = global_rq.jiffies + timeslice;
-
-  add_process_rq(pid, timeslice, deadline);
-  return;
-}
 
 void interrupt_process (pid_t pid, ctx_t* ctx) {
   pcb_t* interrupted = &pcb_table.pcb[pid];
 
   memcpy(&interrupted->ctx, ctx, sizeof(ctx_t));
-  //enter_ready_queue_process(pid);
+  interrupted->status = STATUS_READY;
 
   return;
 }
 
-void dispatch_process (pid_t pid, ctx_t* ctx) {
-  pcb_t* dispatched = &pcb_table.pcb[pid];
+void dispatch_process(rq_entry_t* entry, ctx_t* ctx) {
+  pcb_t* dispatched = &pcb_table.pcb[entry->pid];
 
   memcpy(ctx, &dispatched->ctx, sizeof(ctx_t));
   dispatched->status = STATUS_EXECUTING;
-  pcb_table.executing_pid = pid;
+  dispatched->timeslice = entry->timeslice;
+  dispatched->deadline = entry->deadline;
+  pcb_table.executing_pid = entry->pid;
 
   return;
-}
-
-pid_t next_process_ready () {
-  /*
-     if (ready_queue_head == ready_queue_tail) {
-     return -1;
-     }
-
-     pid_t next = ready_queue[ready_queue_head];
-     ready_queue_head = (ready_queue_head + 1) % PCB_TABLE_SIZE;
-
-     return next;
-   */
-  return 0;
 }
 
 /**
@@ -87,32 +52,54 @@ void sched_rst(ctx_t* ctx) {
   pcb_table.pcb[0].ctx.cpsr = 0x50;
   pcb_table.pcb[0].ctx.pc   = (uint32_t)(&main_P3);
   pcb_table.pcb[0].ctx.sp   = (uint32_t)(&tos_P3);
-  //enter_ready_queue_process(0);
+  sched_process_rq(0);
 
   pcb_table.pcb[1].pid      = 1;
   pcb_table.pcb[1].ctx.cpsr = 0x50;
   pcb_table.pcb[1].ctx.pc   = (uint32_t)(&main_P4);
   pcb_table.pcb[1].ctx.sp   = (uint32_t)(&tos_P4);
-  //enter_ready_queue_process(1);
+  sched_process_rq(1);
 
-  dispatch_process(next_process_ready(), ctx);
-
+  dispatch_process(earliest_deadline_process(), ctx);
   return;
 }
 
 void sched_tick() {
-  global_rq.jiffies++;
+  pcb_table.pcb[pcb_table.executing_pid].timeslice--;
+  sched_rq_tick();
   return;
 }
 
-void sched_need_resched() {
-  return;
+/**
+ * A process is preempted and rescheduled if one of the following happens:
+ * - it's timeslice is over
+ */
+int sched_need_resched() {
+  return pcb_table.pcb[pcb_table.executing_pid].timeslice == 0;
 }
 
+/**
+ * Scheduler main function
+ * Preempt runnning process and dispatch the next process with the highest prio.
+ *
+ */
 void sched(ctx_t* ctx) {
 
-  interrupt_process(pcb_table.executing_pid, ctx);
-  dispatch_process(next_process_ready(), ctx);
+  if (pcb_table.pcb[pcb_table.executing_pid].timeslice == 0) {
+    sched_process_rq(pcb_table.executing_pid);
+  }
+  else {
+    pcb_t* exec = &pcb_table.pcb[pcb_table.executing_pid];
+    add_process_rq(exec->pid, exec->timeslice, exec->deadline);
+  }
 
+  rq_entry_t* edp_entry = earliest_deadline_process();
+
+  if (edp_entry->pid != pcb_table.executing_pid) {
+    interrupt_process(pcb_table.executing_pid, ctx);
+  }
+
+  dispatch_process(edp_entry, ctx);
+  remove_edp_rq();
   return;
 }

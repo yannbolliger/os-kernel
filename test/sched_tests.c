@@ -3,6 +3,7 @@
 
 #include "min_unit.h"
 #include "../kernel/sched.h"
+#include "../kernel/sched_rq.h"
 
 /**
  * dummy declarations to fulfill sched.c requirements
