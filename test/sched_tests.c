@@ -18,7 +18,13 @@ uint32_t tos_P4 = 0;
 
 extern pcb_table_t pcb_table;
 
+/**
+ * TESTS
+ */
 
+int sched_rst_test() {
+
+}
 
 int all_tests_sched() {
   return 0;

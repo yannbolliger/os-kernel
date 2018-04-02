@@ -71,7 +71,8 @@ void sched_tick() {
 }
 
 /**
- * A process is preempted and rescheduled if one of the following happens:
+ * A process needs to be preempted and rescheduled
+ * if one of the following happens:
  * - it's timeslice is over
  */
 int sched_need_resched() {
@@ -81,22 +82,17 @@ int sched_need_resched() {
 /**
  * Scheduler main function
  * Preempt runnning process and dispatch the next process with the highest prio.
- *
  */
 void sched(ctx_t* ctx) {
+  pcb_t* exec = &pcb_table.pcb[pcb_table.executing_pid];
 
-  if (pcb_table.pcb[pcb_table.executing_pid].timeslice == 0) {
-    sched_process_rq(pcb_table.executing_pid);
-  }
-  else {
-    pcb_t* exec = &pcb_table.pcb[pcb_table.executing_pid];
-    add_process_rq(exec->pid, exec->timeslice, exec->deadline);
-  }
+  if (exec->timeslice == 0) sched_process_rq(exec->pid);
+  else add_process_rq(exec->pid, exec->timeslice, exec->deadline);
 
   rq_entry_t* edp_entry = earliest_deadline_process();
 
-  if (edp_entry->pid != pcb_table.executing_pid) {
-    interrupt_process(pcb_table.executing_pid, ctx);
+  if (edp_entry->pid != exec->pid) {
+    interrupt_process(exec->pid, ctx);
   }
 
   dispatch_process(edp_entry, ctx);
