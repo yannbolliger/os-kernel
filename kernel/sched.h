@@ -19,6 +19,7 @@
 
 void sched_rst(ctx_t* ctx);
 void sched_tick();
+void sched_fork(ctx_t* ctx);
 int  sched_need_resched();
 void sched(ctx_t* ctx);
 

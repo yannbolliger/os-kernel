@@ -37,9 +37,27 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
   pcb->pid      = ++pcb_table.max_pid;
   pcb->ctx.cpsr = cpsr;
   pcb->ctx.pc   = pc;
+  pcb->status   = STATUS_READY;
 
-  // sp allocation
+  // TODO: sp allocation
   return pcb->pid;
+}
+
+pid_t fork_process(pid_t parent_pid) {
+  pcb_t* parent = pcb_of(parent_pid);
+
+  // context is copied below
+  pid_t child_pid = create_process(0, 0);
+  if (child_pid == 0) return 0;
+
+  pcb_t* child = pcb_of(child_pid);
+  child->ctx = parent->ctx;
+
+  // return value is 0 for child
+  child->ctx.gpr[0] = 0;
+
+  // TODO: copy stack
+  return child_pid;
 }
 
 pid_t interrupt_executing_process(ctx_t* ctx) {

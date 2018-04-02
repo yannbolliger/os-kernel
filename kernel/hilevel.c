@@ -71,7 +71,7 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
   switch (svc_code) {
 
-    // yield() (from timer IRQ)
+    // yield()
     case SYS_YIELD: {
       sched(ctx);
       break;
@@ -87,8 +87,14 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
         PL011_putc(UART0, *x++, true);
       }
 
+      // return value
       ctx->gpr[0] = n;
       break;
+    }
+
+    // fork()
+    case SYS_FORK: {
+      sched_fork(ctx);
     }
 
     // unknown/unsupported

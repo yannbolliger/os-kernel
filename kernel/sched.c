@@ -17,6 +17,17 @@ void run_next_process(ctx_t* ctx) {
   remove_entry_rq(edp);
 }
 
+void sched_fork(ctx_t* ctx) {
+  pid_t child_pid = fork_process(executing_process());
+
+  if (0 != child_pid) {
+    sched_process_rq(child_pid);
+
+    // return the child_pid to the parent
+    ctx->gpr[0] = child_pid;
+  }
+}
+
 /**
  * Initialise PCBs representing processes stemming from execution of
  * the two user programs.  Note in each case that
