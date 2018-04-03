@@ -71,13 +71,13 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
   switch (svc_code) {
 
-    // yield()
+    // void yield()
     case SYS_YIELD: {
       sched(ctx);
       break;
     }
 
-    // write(fd, x, n)
+    // int write(fd, x, n)
     case SYS_WRITE: {
       int fd  = (int)  (ctx->gpr[0]);
       char* x = (char*)(ctx->gpr[1]);
@@ -92,9 +92,21 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
       break;
     }
 
-    // fork()
+    // pid_t fork()
     case SYS_FORK: {
       sched_fork(ctx);
+      break;
+    }
+
+    // void exec(const void* x)
+    case SYS_EXEC: {
+      const void * x = ctx->gpr[0];
+
+      ctx->pc = (uint32_t) x;
+      ctx->sp = pcb_of(executing_process())->base_sp;
+      memset(ctx->gpr[0], 0, sizeof(ctx->gpr));
+
+      break;
     }
 
     // unknown/unsupported
