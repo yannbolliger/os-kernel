@@ -51,14 +51,15 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
 
 pid_t fork_process(pid_t parent_pid) {
   pcb_t* parent = pcb_of(parent_pid);
+  if (NULL == parent) return 0;
 
   // context is copied below
   pid_t child_pid = create_process(0, 0);
-  if (child_pid == 0) return 0;
-
   pcb_t* child = pcb_of(child_pid);
-  child->ctx = parent->ctx;
+  if (child_pid == 0 || NULL == child) return 0;
 
+
+  child->ctx = parent->ctx;
   // return value is 0 for child
   child->ctx.gpr[0] = 0;
 
@@ -68,6 +69,7 @@ pid_t fork_process(pid_t parent_pid) {
 
 pid_t interrupt_executing_process(ctx_t* ctx) {
   pcb_t* interrupted = pcb_of(executing_process());
+  if (NULL == interrupted) return 0;
 
   memcpy(&interrupted->ctx, ctx, sizeof(ctx_t));
   interrupted->status = STATUS_READY;
@@ -77,6 +79,7 @@ pid_t interrupt_executing_process(ctx_t* ctx) {
 
 pid_t dispatch_process(pid_t pid, ctx_t* ctx) {
   pcb_t* dispatched = pcb_of(pid);
+  if (NULL == dispatched) return 0;
 
   memcpy(ctx, &dispatched->ctx, sizeof(ctx_t));
   dispatched->status = STATUS_EXECUTING;
