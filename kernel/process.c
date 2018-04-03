@@ -5,13 +5,19 @@
 pcb_table_t pcb_table = {0};
 
 pid_t executing_process() {
-  return pcb_table.executing_pcb->pid;
+  if (pcb_table.executing_pcb == NULL) return 0;
+  else return pcb_table.executing_pcb->pid;
 }
 
 pcb_t* pcb_of(pid_t pid) {
   // fast lookup for executing pcb
-  if (pid == executing_process())
+  if (pid == executing_process()) {
     return pcb_table.executing_pcb;
+  }
+  // fast lookup for tail (last created process)
+  else if (pid == pcb_table.pcb[pcb_table.tail].pid) {
+    return &pcb_table.pcb[pcb_table.tail];
+  }
   // slow O(n) lookup for arbitrary processes
   else {
     size_t index = pcb_table.head;
@@ -74,6 +80,7 @@ pid_t dispatch_process(pid_t pid, ctx_t* ctx) {
 
   memcpy(ctx, &dispatched->ctx, sizeof(ctx_t));
   dispatched->status = STATUS_EXECUTING;
+  pcb_table.executing_pcb = dispatched;
 
   return dispatched->pid;
 }
