@@ -2,8 +2,15 @@
 #include "min_unit.h"
 #include "../kernel/sched_rq.h"
 
-extern void remove_edp_rq();
 extern rq_t global_rq;
+
+/**
+ * Helpers
+ */
+void dirty_reset_of_queue() {
+  global_rq.head = 0;
+  global_rq.tail = 0;
+}
 
 /**
  * Tests
@@ -23,7 +30,50 @@ int add_process_rq_test() {
     global_rq.run_queue[tail].pid == pid_test
     );
 
-  remove_edp_rq();
+  dirty_reset_of_queue();
+  return 0;
+}
+
+int add_process_when_full_test() {
+  _assert_message(
+    "Head and tail are zero at start",
+    global_rq.head == 0 &&
+    global_rq.tail == 0
+    );
+
+  for (int i = 0; i < MAX_NUMBER_PROCESSES; i++) {
+    add_process_rq(100, 0, 0);
+  }
+
+  _assert_message(
+    "Head and tail when full",
+    global_rq.head == 0 &&
+    global_rq.tail == MAX_NUMBER_PROCESSES - 1
+    );
+
+  size_t head = global_rq.head;
+  size_t tail = global_rq.tail;
+  _assert_message(
+    "Returns zero if run_queue is full",
+    add_process_rq(101, 0, 0) == 0 &&
+    head == global_rq.head &&
+    tail == global_rq.tail
+    );
+
+  remove_entry_rq(earliest_deadline_rq());
+
+  _assert_message(
+    "Can again add element after remove one",
+    global_rq.head == 1 &&
+    add_process_rq(10000, 0, 0) != 0
+    );
+
+  _assert_message(
+    "Index wraps around end of array",
+    global_rq.tail == 0
+    );
+
+  dirty_reset_of_queue();
   return 0;
 }
 
@@ -40,7 +90,7 @@ int schedule_process_rq_test() {
     global_rq.run_queue[index].deadline >= global_rq.jiffies + TIME_SLICE
     );
 
-  remove_edp_rq();
+  dirty_reset_of_queue();
   return 0;
 }
 
@@ -53,26 +103,31 @@ int add_process_rq_order_test() {
   add_process_rq(12, TIME_SLICE, 5);
 
   _assert_message(
-    "Deadlines should be ordered increasingly",
-    global_rq.edt->deadline == 5 &&
-    global_rq.edt->next->deadline == 10 &&
-    global_rq.edt->next->next->deadline == 20
+    "Earliest deadline returns correct entry.",
+    earliest_deadline_rq()->deadline == 5
     );
+
+  remove_entry_rq(earliest_deadline_rq());
 
   _assert_message(
     "Earliest deadline returns correct entry.",
-    earliest_deadline_pid_rq() == 12
+    earliest_deadline_rq()->deadline == 10
     );
+  remove_entry_rq(earliest_deadline_rq());
 
-  remove_edp_rq();
-  remove_edp_rq();
-  remove_edp_rq();
+  _assert_message(
+    "Earliest deadline returns correct entry.",
+    earliest_deadline_rq()->deadline == 20
+    );
+  remove_entry_rq(earliest_deadline_rq());
+
   return 0;
 }
 
 
 int all_tests_sched_rq() {
   _verify(add_process_rq_test);
+  _verify(add_process_when_full_test);
   _verify(schedule_process_rq_test);
   _verify(add_process_rq_order_test);
   return 0;
