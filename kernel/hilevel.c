@@ -29,9 +29,8 @@ void hilevel_handler_rst(ctx_t* ctx) {
   // enable GIC distributor
   GICD0->CTLR         = 0x00000001;
 
-  int_enable_irq();
-
   sched_rst(ctx);
+  int_enable_irq();
 
   return;
 }
@@ -74,6 +73,8 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
     // void yield()
     case SYS_YIELD: {
       sched(ctx);
+
+      TIMER0->Timer1Load  = TIMER_INTERVAL_TICKS;
       break;
     }
 

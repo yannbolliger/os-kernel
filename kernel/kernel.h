@@ -18,7 +18,7 @@
 #define TIMER_CLOCK          (2^15)
 #define TIMER_INTERVAL_TICKS (TIMER_CLOCK/HZ)
 
-#define MAX_NUMBER_PROCESSES (50)
+#define MAX_NUMBER_PROCESSES (200)
 
 /**
  * Type Definitions Kernel-wide
