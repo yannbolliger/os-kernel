@@ -35,14 +35,14 @@ void clear_bit(size_t index) {
 }
 
 int test_all(size_t index, size_t n) {
-  for (int i = 0; i < n; ++i) {
+  for (size_t i = 0; i < n; ++i) {
     if (!test_bit(index + i)) return 0;
   }
   return 1;
 }
 
 int test_any(size_t index, size_t n) {
-  for (int i = 0; i < n; ++i) {
+  for (size_t i = 0; i < n; ++i) {
     if (test_bit(index + i)) return 1;
   }
   return 0;
@@ -56,14 +56,14 @@ int test_any(size_t index, size_t n) {
 uint32_t mem_allocate(const size_t n_blocks) {
   if (n_blocks == 0) return 0;
 
-  size_t index = 0;
+  int index = 0;
 
   while (test_any(index, n_blocks)) {
     index = find_first_unset(index);
     if (index == -1) return 0;
   }
 
-  for (int i = 0; i < n_blocks; i++) {
+  for (size_t i = 0; i < n_blocks; i++) {
     set_bit(index + i);
   }
   return index * MEM_BLOCK_SIZE + MEM_LO;
@@ -74,7 +74,7 @@ size_t mem_deallocate(const uint32_t address, const size_t n_blocks) {
 
   if (!test_all(index, n_blocks)) return 0;
 
-  for (int i = 0; i < n_blocks; ++i) {
+  for (size_t i = 0; i < n_blocks; ++i) {
     clear_bit(index + i);
   }
   return n_blocks;
@@ -94,6 +94,6 @@ size_t mem_copy(const uint32_t src_addr, const uint32_t dst_addr,
   if (src_index < dst_index && src_index + n_blocks > dst_index) return 0;
   if (dst_index < src_index && dst_index + n_blocks > src_index) return 0;
 
-  memcpy(dst_addr, src_addr, n_blocks * MEM_BLOCK_SIZE);
+  memcpy((void *) dst_addr, (void *) src_addr, n_blocks * MEM_BLOCK_SIZE);
   return n_blocks;
 }
