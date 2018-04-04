@@ -26,6 +26,7 @@ void sched_fork(ctx_t* ctx) {
     // return the child_pid to the parent
     ctx->gpr[0] = child_pid;
   }
+  else ctx->gpr[0] = -1;
 }
 
 /**
@@ -59,11 +60,6 @@ void sched_tick() {
 int sched_need_resched() {
   return pcb_of(executing_process())->timeslice == 0;
 }
-
-/**
- * sched_fork
- */
-
 
 /**
  * Scheduler main function

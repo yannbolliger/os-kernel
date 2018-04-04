@@ -44,9 +44,9 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
   pcb->pid      = ++pcb_table.max_pid;
   pcb->ctx.cpsr = cpsr;
   pcb->ctx.pc   = pc;
-  pcb->ctx.sp   = stack_base;
+  pcb->ctx.sp   = mem_block_addr_end(stack_base);
   pcb->status   = STATUS_READY;
-  pcb->base_sp  = stack_base;
+  pcb->base_sp  = mem_block_addr_end(stack_base);
 
   return pcb->pid;
 }
@@ -88,13 +88,12 @@ pid_t fork_process(pid_t parent_pid) {
 
   // replicate context
   child->ctx = parent->ctx;
+
   // return value is 0 for child
   child->ctx.gpr[0] = 0;
+  child->ctx.sp = mem_block_addr_end(child->base_sp);
 
-  uint32_t parent_mem_lo = parent->base_sp - MEM_BLOCK_SIZE + 1;
-  uint32_t child_mem_lo = child->base_sp - MEM_BLOCK_SIZE + 1;
-
-  size_t n = mem_copy(parent_mem_lo, child_mem_lo, 1);
+  size_t n = mem_copy(parent->base_sp, child->base_sp, 1);
   if (n != 1) {
     destroy_process(child);
     return 0;

@@ -22,4 +22,9 @@ size_t mem_deallocate(const uint32_t address, const size_t n_blocks);
 size_t mem_copy(const uint32_t src_addr, const uint32_t dst_addr,
     const size_t n_blocks);
 
- #endif
+
+static inline uint32_t mem_block_addr_end(uint32_t addr_start) {
+  return addr_start + MEM_BLOCK_SIZE - 1;
+}
+
+#endif

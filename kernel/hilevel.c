@@ -101,10 +101,13 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
     // void exec(const void* x)
     case SYS_EXEC: {
-      const void * x = ctx->gpr[0];
+      // PC = x (PC goes where the pointer points at)
+      ctx->pc = ctx->gpr[0];
 
-      ctx->pc = (uint32_t) x;
+      // dirty reset of stack
       ctx->sp = pcb_of(executing_process())->base_sp;
+
+      // reset processor registers
       memset(ctx->gpr[0], 0, sizeof(ctx->gpr));
 
       break;
