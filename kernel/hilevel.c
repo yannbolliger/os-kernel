@@ -108,7 +108,7 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
       ctx->sp = pcb_of(executing_process())->base_sp;
 
       // reset processor registers
-      memset(ctx->gpr[0], 0, sizeof(ctx->gpr));
+      memset((void *) ctx->gpr[0], 0, sizeof(ctx->gpr));
 
       break;
     }
