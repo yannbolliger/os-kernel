@@ -87,11 +87,11 @@ pid_t fork_process(pid_t parent_pid) {
   if (child_pid == 0 || NULL == child) return 0;
 
   // replicate context
-  child->ctx = parent->ctx;
+  // child->ctx = parent->ctx;
 
   // return value is 0 for child
   child->ctx.gpr[0] = 0;
-  child->ctx.sp = mem_block_addr_end(child->base_sp);
+  child->ctx.lr = parent->ctx.pc;
 
   size_t n = mem_copy(parent->base_sp, child->base_sp, 1);
   if (n != 1) {
