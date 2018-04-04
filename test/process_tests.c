@@ -7,16 +7,6 @@
 extern pcb_table_t pcb_table;
 ctx_t ctx = {0};
 
-uint32_t mem_allocate(size_t n) {
-  return 1;
-}
-size_t mem_deallocate(uint32_t addr, size_t n) {
-  return n;
-}
-size_t mem_copy(uint32_t src, uint32_t dst, size_t n) {
-  return n;
-}
-
 /**
  * Helpers
  */
