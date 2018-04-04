@@ -70,16 +70,11 @@ int sched_need_resched() {
  * Preempt runnning process and dispatch the next process with the highest prio.
  */
 void sched(ctx_t* ctx) {
-  pcb_t* exec = pcb_of(executing_process());
+  pcb_t* exec = pcb_of(interrupt_executing_process(ctx));
 
   // determines whether the call is made from the timer or from yield
   if (exec->timeslice == 0) sched_process_rq(exec->pid);
   else add_process_rq(exec->pid, exec->timeslice, exec->deadline);
-
-  rq_entry_t* edp = earliest_deadline_rq();
-  if (edp->pid != exec->pid) {
-    interrupt_executing_process(ctx);
-  }
 
   run_next_process(ctx);
   return;
