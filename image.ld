@@ -20,7 +20,11 @@ SECTIONS {
   * Memory region that is managed by the kernel and may be allocated to user
   * processes. (MUST CORRESPOND WITH LIMITS in mem.h)
   */
-  mem_lo  = 0x70020000;
-  ASSERT(. < mem_lo, "Error: Too little text/data/bss memory.");
-  mem_hi  = 0x90000000;
+  end_of_fixed_mem = .;
+  .  = 0x70020000;
+  mem_lo = .;
+  . = 0x90000000;
+  mem_hi = .;
+
+  ASSERT((end_of_fixed_mem < mem_lo), "Error: Too little text/data/bss memory")
 }
