@@ -6,12 +6,22 @@
 
 extern pcb_table_t pcb_table;
 ctx_t ctx = {0};
+
+uint32_t mem_allocate(size_t n) {
+  return 1;
+}
+size_t mem_deallocate(uint32_t addr, size_t n) {
+  return n;
+}
+size_t mem_copy(uint32_t src, uint32_t dst, size_t n) {
+  return n;
+}
+
 /**
  * Helpers
  */
 
 void dirty_table_reset() {
-  pcb_table.head = 0;
   pcb_table.tail = 0;
   pcb_table.executing_pcb = NULL;
 }
@@ -73,7 +83,7 @@ int create_process_full_test() {
     0 != create_process(0, 0)
     );
 
-  for (int i = 0; i < MAX_NUMBER_PROCESSES - 3; i++) {
+  for (int i = 0; i < MAX_NUMBER_PROCESSES - 2; i++) {
     create_process(0, 0);
   }
 

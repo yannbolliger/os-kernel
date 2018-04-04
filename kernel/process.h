@@ -5,13 +5,13 @@
 
 #include <string.h>
 #include "kernel.h"
+#include "mem.h"
 
 
 typedef struct {
   pcb_t pcb[MAX_NUMBER_PROCESSES];
   pid_t max_pid;
   pcb_t* executing_pcb;
-  size_t head;
   size_t tail;
 } pcb_table_t;
 
