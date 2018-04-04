@@ -22,5 +22,6 @@ pid_t create_process(uint32_t cpsr, uint32_t pc);
 pid_t fork_process(pid_t parent_pid);
 pid_t interrupt_executing_process(ctx_t* ctx);
 pid_t dispatch_process(pid_t pid, ctx_t* ctx);
+pcb_t* update_pcb_of_executing_process(ctx_t* ctx);
 
 #endif

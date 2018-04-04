@@ -86,6 +86,10 @@ pid_t fork_process(pid_t parent_pid) {
   pcb_t* child = pcb_of(child_pid);
   if (child_pid == 0 || NULL == child) return 0;
 
+  // replicate context
+  child->ctx = parent->ctx;
+  child->ctx.gpr[0] = 0;
+
   size_t n = mem_copy(parent->base_sp, child->base_sp, 1);
   if (n != 1) {
     destroy_process(child);
@@ -95,11 +99,16 @@ pid_t fork_process(pid_t parent_pid) {
   return child_pid;
 }
 
-pid_t interrupt_executing_process(ctx_t* ctx) {
-  pcb_t* interrupted = pcb_of(executing_process());
-  if (NULL == interrupted) return 0;
+pcb_t* update_pcb_of_executing_process(ctx_t* ctx) {
+  pcb_t* executing = pcb_of(executing_process());
+  if (NULL == executing) return NULL;
 
-  memcpy(&interrupted->ctx, ctx, sizeof(ctx_t));
+  memcpy(&executing->ctx, ctx, sizeof(ctx_t));
+  return executing;
+}
+
+pid_t interrupt_executing_process(ctx_t* ctx) {
+  pcb_t* interrupted = update_pcb_of_executing_process(ctx);
   interrupted->status = STATUS_READY;
 
   return interrupted->pid;

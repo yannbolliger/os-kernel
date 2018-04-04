@@ -18,9 +18,7 @@ void run_next_process(ctx_t* ctx) {
 }
 
 void sched_fork(ctx_t* ctx) {
-  // in order to copy the new context into the pcb
-  pid_t parent_pid = interrupt_executing_process(ctx);
-
+  update_pcb_of_executing_process(ctx);
   pid_t child_pid = fork_process(executing_process());
 
   if (0 != child_pid) {
@@ -30,8 +28,6 @@ void sched_fork(ctx_t* ctx) {
     ctx->gpr[0] = child_pid;
   }
   else ctx->gpr[0] = -1;
-
-  dispatch_process(parent_pid, ctx);
 }
 
 /**
