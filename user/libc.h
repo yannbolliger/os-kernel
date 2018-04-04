@@ -12,7 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "kernel.h"
+typedef int pid_t;
 
 /* The definitions below capture symbolic constants within these classes:
  *

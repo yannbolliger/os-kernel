@@ -18,8 +18,8 @@ void run_next_process(ctx_t* ctx) {
 }
 
 void sched_fork(ctx_t* ctx) {
-  update_pcb_of_executing_process(ctx);
-  pid_t child_pid = fork_process(executing_process());
+  pcb_t* parent = update_pcb_of_executing_process(ctx);
+  pid_t child_pid = fork_process(parent);
 
   if (0 != child_pid) {
     sched_process_rq(child_pid);

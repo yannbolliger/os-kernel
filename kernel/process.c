@@ -78,8 +78,7 @@ pid_t destroy_process(pcb_t* pcb_to_remove) {
   return pid_to_remove;
 }
 
-pid_t fork_process(pid_t parent_pid) {
-  pcb_t* parent = pcb_of(parent_pid);
+pid_t fork_process(pcb_t* const parent) {
   if (NULL == parent) return 0;
 
   pid_t child_pid = create_process(parent->ctx.cpsr, parent->ctx.pc);
