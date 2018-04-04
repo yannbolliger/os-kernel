@@ -15,10 +15,12 @@ SECTIONS {
   /* allocate stack for svc mode     */
   .       = . + 0x00001000;
   tos_svc = .;
-  /* allocate stack for P3           */
-  .       = . + 0x00001000;
-  tos_console  = .;
-  .       = . + 0x00000004;
-  mem_lo  = .;
+
+  /*
+  * Memory region that is managed by the kernel and may be allocated to user
+  * processes. (MUST CORRESPOND WITH LIMITS in mem.h)
+  */
+  mem_lo  = 0x70020000;
+  ASSERT(. < mem_lo, "Error: Too little text/data/bss memory.");
   mem_hi  = 0x90000000;
 }
