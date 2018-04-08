@@ -78,17 +78,13 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
     // int write(fd, x, n)
     case SYS_WRITE: {
-      int fd  = (int)  (ctx->gpr[0]);
-      char* x = (char*)(ctx->gpr[1]);
-      int n   = (int)  (ctx->gpr[2]);
+      int file_descriptor  = (int)  (ctx->gpr[0]);
+      char* x              = (char*)(ctx->gpr[1]);
+      int n                = (int)  (ctx->gpr[2]);
 
-      if (STDIN_FILENO == fd && n >= 0) {
-        for (int i = 0; i < n; i++) {
-          PL011_putc(UART0, *x++, true);
-        }
-
+      if (STDIN_FILENO == file_descriptor && n >= 0) {
         // return value
-        ctx->gpr[0] = n;
+        ctx->gpr[0] = uart_write(UART0, x, n);
       }
       else ctx->gpr[0] = -1;
       break;

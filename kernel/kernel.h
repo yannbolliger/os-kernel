@@ -5,6 +5,8 @@
 
 #include <stdint.h>
 
+#include "libc.h"
+
 /**
  * Timer configuration
  * The timers of the Cortex-A8 ["are clocked by a 32.768kHz reference"]
@@ -27,9 +29,6 @@
 /**
  * Type Definitions Kernel-wide
  */
-
-// Process IDentifier (PID) type
-typedef int pid_t;
 
 // All possible states of a process
 typedef enum {
