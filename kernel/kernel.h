@@ -20,6 +20,10 @@
 
 #define MAX_NUMBER_PROCESSES (200)
 
+
+
+#define ERROR_CODE -1
+
 /**
  * Type Definitions Kernel-wide
  */

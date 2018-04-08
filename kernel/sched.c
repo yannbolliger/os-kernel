@@ -30,14 +30,19 @@ void sched_fork(ctx_t* ctx) {
   else ctx->gpr[0] = -1;
 }
 
-void sched_terminate(pid_t pid_to_remove, ctx_t* ctx) {
+int sched_terminate(pid_t pid_to_remove, ctx_t* ctx) {
+  // halt and reschedule current process
   pcb_t* exec = pcb_of(interrupt_executing_process(ctx));
-  add_process_rq(exec->pid, exec->timeslice, exec->deadline);
+  pid_t exec_pid = add_process_rq(exec->pid, exec->timeslice, exec->deadline);
+  if (exec_pid == 0) return ERROR_CODE;
 
-  destroy_process(pid_to_remove);
+  int error = destroy_process(pid_to_remove);
+  if (error) return ERROR_CODE;
+
   remove_pid_rq(pid_to_remove);
-  
+
   run_next_process(ctx);
+  return 0;
 }
 
 /**

@@ -82,12 +82,15 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
       char* x = (char*)(ctx->gpr[1]);
       int n   = (int)  (ctx->gpr[2]);
 
-      for (int i = 0; i < n; i++) {
-        PL011_putc(UART0, *x++, true);
-      }
+      if (STDIN_FILENO == fd && n >= 0) {
+        for (int i = 0; i < n; i++) {
+          PL011_putc(UART0, *x++, true);
+        }
 
-      // return value
-      ctx->gpr[0] = n;
+        // return value
+        ctx->gpr[0] = n;
+      }
+      else ctx->gpr[0] = -1;
       break;
     }
 
@@ -101,8 +104,8 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
     case SYS_EXEC: {
       // check for NULL pointer argument
       if (0 == ctx->gpr[0]) {
-          // return -1 and do nothing else
-          ctx->gpr[0] = -1;
+        // return -1 and do nothing else
+        ctx->gpr[0] = -1;
       }
       else {
         // PC = x (PC goes where the pointer points at)
@@ -130,7 +133,9 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
       pid_t pid = ctx->gpr[0];
       int signal = ctx->gpr[1];
 
-      sched_terminate(pid, ctx);
+      // return error code
+      ctx->gpr[0] = sched_terminate(pid, ctx);
+      break;
     }
 
     // unknown/unsupported

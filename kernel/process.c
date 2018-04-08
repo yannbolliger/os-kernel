@@ -56,8 +56,8 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
  * In order to keep the table dense, the last element of the stack is copied
  * into the empty space.
  */
-pid_t _destroy_process(pcb_t* pcb_to_remove) {
-  if (pcb_to_remove == NULL) return 0;
+int _destroy_process(pcb_t* pcb_to_remove) {
+  if (pcb_to_remove == NULL) return ERROR_CODE;
 
   // backup pids
   pid_t pid_to_remove = pcb_to_remove->pid;
@@ -65,7 +65,7 @@ pid_t _destroy_process(pcb_t* pcb_to_remove) {
 
   // free stack memory
   size_t n = mem_deallocate(pcb_to_remove->mem_base_addr, 1);
-  if (n != 1) return 0;
+  if (n != 1) return ERROR_CODE;
 
   // fill empty space
   *pcb_to_remove = pcb_table.pcb[--pcb_table.tail];
@@ -75,10 +75,10 @@ pid_t _destroy_process(pcb_t* pcb_to_remove) {
   if (newly_filled_pcb->pid == executing_pid) {
     pcb_table.executing_pcb = newly_filled_pcb;
   }
-  return pid_to_remove;
+  return 0;
 }
 
-pid_t destroy_process(pid_t to_destroy) {
+int destroy_process(pid_t to_destroy) {
   return _destroy_process(pcb_of(to_destroy));
 }
 
