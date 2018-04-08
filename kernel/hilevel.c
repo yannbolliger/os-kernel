@@ -101,14 +101,21 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
     // void exec(const void* x)
     case SYS_EXEC: {
-      // PC = x (PC goes where the pointer points at)
-      ctx->pc = ctx->gpr[0];
-      ctx->lr = 0;
+      // check for NULL pointer argument
+      if (0 == ctx->gpr[0]) {
+          // return -1 and do nothing else
+          ctx->gpr[0] = -1;
+      }
+      else {
+        // PC = x (PC goes where the pointer points at)
+        ctx->pc = ctx->gpr[0];
+        ctx->lr = 0;
+        memset(ctx->gpr, 0, sizeof(ctx->gpr));
 
-      // dirty reset of stack
-      pcb_t* exec = update_pcb_of_executing_process(ctx);
-      ctx->sp = exec->base_sp;
-
+        // dirty reset of stack
+        pcb_t* exec = update_pcb_of_executing_process(ctx);
+        ctx->sp = mem_block_addr_end(exec->mem_base_addr);
+      }
       break;
     }
 

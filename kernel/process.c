@@ -46,7 +46,7 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
   pcb->ctx.pc   = pc;
   pcb->ctx.sp   = mem_block_addr_end(stack_base);
   pcb->status   = STATUS_READY;
-  pcb->base_sp  = mem_block_addr_end(stack_base);
+  pcb->mem_base_addr  = stack_base;
 
   return pcb->pid;
 }
@@ -64,7 +64,7 @@ pid_t destroy_process(pcb_t* pcb_to_remove) {
   pid_t executing_pid = executing_process();
 
   // free stack memory
-  size_t n = mem_deallocate(pcb_to_remove->base_sp, 1);
+  size_t n = mem_deallocate(pcb_to_remove->mem_base_addr, 1);
   if (n != 1) return 0;
 
   // fill empty space
@@ -89,7 +89,7 @@ pid_t fork_process(pcb_t* const parent) {
   child->ctx = parent->ctx;
   child->ctx.gpr[0] = 0;
 
-  size_t n = mem_copy(parent->base_sp, child->base_sp, 1);
+  size_t n = mem_copy(parent->mem_base_addr, child->mem_base_addr, 1);
   if (n != 1) {
     destroy_process(child);
     return 0;

@@ -53,7 +53,7 @@ typedef struct {
   ctx_t ctx;
   uint64_t deadline;
   uint64_t timeslice;
-  uint32_t base_sp;
+  uint32_t mem_base_addr;
 } pcb_t;
 
 
