@@ -7,6 +7,21 @@
 extern pcb_table_t pcb_table;
 ctx_t ctx = {0};
 
+// faking these functions in order to only test process.c
+size_t mem_copy(uint32_t src, uint32_t dst, size_t n) {
+  return n;
+}
+
+size_t mem_deallocate(uint32_t addr, size_t n) {
+  return n;
+}
+
+uint32_t addr = 0;
+uint32_t mem_allocate(size_t n) {
+  addr += 0x1000;
+  return 0x10000000 + addr;
+}
+
 /**
  * Helpers
  */
@@ -67,6 +82,8 @@ int pcb_of_test() {
   return 0;
 }
 
+
+
 int create_process_full_test() {
   _assert_message(
     "Create process returns valid pid",
@@ -91,9 +108,31 @@ int create_process_full_test() {
   return 0;
 }
 
+int fork_process_test() {
+  pcb_t* parent = pcb_of(create_process(20, 30));
+  pcb_t* child  = pcb_of(fork_process(parent));
+
+  _assert_message(
+    "Child and parent have same context for most fields",
+    parent->ctx.cpsr == child->ctx.cpsr &&
+    parent->ctx.lr == child->ctx.lr &&
+    parent->ctx.pc == child->ctx.pc
+  );
+
+  _assert_message(
+    "Child and parent do NOT have the same sp and mem_base_addr",
+    parent->ctx.sp != child->ctx.sp &&
+    parent->mem_base_addr != child->mem_base_addr
+  );
+  return 0;
+}
+
+
+
 int all_process_tests() {
   _verify(pcb_of_test);
   _verify(executing_process_test);
   _verify(create_process_full_test);
+  _verify(fork_process_test);
   return 0;
 }

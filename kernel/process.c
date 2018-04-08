@@ -86,8 +86,12 @@ pid_t fork_process(pcb_t* const parent) {
   if (child_pid == 0 || NULL == child) return 0;
 
   // replicate context
+  uint32_t child_sp_backup = child->ctx.sp;
   child->ctx = parent->ctx;
+
+  // set return value and different sp
   child->ctx.gpr[0] = 0;
+  child->ctx.sp = child_sp_backup;
 
   size_t n = mem_copy(parent->mem_base_addr, child->mem_base_addr, 1);
   if (n != 1) {
