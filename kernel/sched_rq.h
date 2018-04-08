@@ -31,6 +31,7 @@ pid_t add_process_rq(pid_t pid, uint64_t timeslice, uint64_t deadline);
 pid_t sched_process_rq(pid_t pid);
 rq_entry_t* earliest_deadline_rq();
 void remove_entry_rq(rq_entry_t*);
+void remove_pid_rq(pid_t pid);
 void sched_tick_rq();
 
 #endif

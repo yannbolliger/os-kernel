@@ -54,6 +54,19 @@ void remove_entry_rq(rq_entry_t* to_remove) {
   global_rq.head = (global_rq.head + 1) % MAX_NUMBER_PROCESSES;
 }
 
+void remove_pid_rq(pid_t pid_to_remove) {
+  size_t index = global_rq.head;
+
+  while (index != global_rq.tail) {
+    rq_entry_t* current = &global_rq.run_queue[index];
+    index = (index + 1) % MAX_NUMBER_PROCESSES;
+
+    if (current->pid == pid_to_remove) {
+      remove_entry_rq(current);
+      break;
+    }
+  }
+}
 
 void sched_tick_rq() {
   global_rq.jiffies++;

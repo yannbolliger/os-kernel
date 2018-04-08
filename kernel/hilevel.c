@@ -121,8 +121,16 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
     case SYS_EXIT: {
       int x = ctx->gpr[0];
 
-      sched_exit(ctx);
+      sched_terminate(executing_process(), ctx);
       break;
+    }
+
+    //int kill(pid_t pid, int x)
+    case SYS_KILL: {
+      pid_t pid = ctx->gpr[0];
+      int signal = ctx->gpr[1];
+
+      sched_terminate(pid, ctx);
     }
 
     // unknown/unsupported
