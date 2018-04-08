@@ -56,7 +56,7 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
  * In order to keep the table dense, the last element of the stack is copied
  * into the empty space.
  */
-pid_t destroy_process(pcb_t* pcb_to_remove) {
+pid_t _destroy_process(pcb_t* pcb_to_remove) {
   if (pcb_to_remove == NULL) return 0;
 
   // backup pids
@@ -78,6 +78,10 @@ pid_t destroy_process(pcb_t* pcb_to_remove) {
   return pid_to_remove;
 }
 
+pid_t destroy_process(pid_t to_destroy) {
+  return _destroy_process(pcb_of(to_destroy));
+}
+
 pid_t fork_process(pcb_t* const parent) {
   if (NULL == parent) return 0;
 
@@ -95,7 +99,7 @@ pid_t fork_process(pcb_t* const parent) {
 
   size_t n = mem_copy(parent->mem_base_addr, child->mem_base_addr, 1);
   if (n != 1) {
-    destroy_process(child);
+    _destroy_process(child);
     return 0;
   }
 

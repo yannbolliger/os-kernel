@@ -73,8 +73,6 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
     // void yield()
     case SYS_YIELD: {
       sched(ctx);
-
-      TIMER0->Timer1Load  = TIMER_INTERVAL_TICKS;
       break;
     }
 
@@ -116,6 +114,14 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
         pcb_t* exec = update_pcb_of_executing_process(ctx);
         ctx->sp = mem_block_addr_end(exec->mem_base_addr);
       }
+      break;
+    }
+
+    // void exit(int x)
+    case SYS_EXIT: {
+      int x = ctx->gpr[0];
+
+      sched_exit(ctx);
       break;
     }
 

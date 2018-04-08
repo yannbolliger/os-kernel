@@ -30,6 +30,11 @@ void sched_fork(ctx_t* ctx) {
   else ctx->gpr[0] = -1;
 }
 
+void sched_exit(ctx_t* ctx) {
+  destroy_process(executing_process());
+  run_next_process(ctx);
+}
+
 /**
  * Initialise PCBs representing processes stemming from execution of
  * the two user programs.  Note in each case that
