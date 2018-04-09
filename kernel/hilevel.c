@@ -64,7 +64,7 @@ void hilevel_handler_irq(ctx_t* ctx) {
 /**
  * SVC interrupt handler,
  * responsible for handling all syscall (SVC) interrupts.
- * See defined interrupts in libc.h
+ * See defined calls in libc.h
  */
 void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 

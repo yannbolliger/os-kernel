@@ -91,6 +91,19 @@ int  read(int fd,       void* x, size_t n) {
   return r;
 }
 
+int pipe(int* fd) {
+  int r;
+
+  asm volatile ("mov r0, %2 \n" // assign r0 = &fd[0]
+  "svc %1     \n"               // make system call SYS_PIPE
+  "mov %0, r0 \n"               // assign r  = r0
+  : "=r" (r)
+  : "I" (SYS_PIPE),  "r" (fd),
+  : "r0");
+
+  return r;
+}
+
 int  fork() {
   int r;
 

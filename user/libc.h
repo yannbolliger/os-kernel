@@ -37,6 +37,7 @@ typedef int pid_t;
 #define SYS_EXEC      (0x05)
 #define SYS_KILL      (0x06)
 #define SYS_NICE      (0x07)
+#define SYS_PIPE      (0x08)
 
 #define SIG_TERM      (0x00)
 #define SIG_QUIT      (0x01)
@@ -61,6 +62,9 @@ extern int write(int fd, const void* x, size_t n);
 // read  n bytes into x from the file descriptor fd; return bytes read
 extern int  read(int fd,       void* x, size_t n);
 
+// create a pipe and save its identifiers in fd; return 0 on success, -1 on failure
+extern int  pipe(int fd[2]);
+
 // perform fork, returning 0 iff. child or > 0 iff. parent process
 extern int  fork();
 // perform exit, i.e., terminate process with status x
@@ -68,7 +72,7 @@ extern void exit(int x);
 // perform exec, i.e., start executing program at address x
 extern void exec(const void* x);
 
-// for process identified by pid, send signal of x
+// for process identified by pid, send signal of x; return 0 on success
 extern int  kill(pid_t pid, int x);
 // for process identified by pid, set  priority to x
 extern void nice(pid_t pid, int x);
