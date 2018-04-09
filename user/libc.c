@@ -98,7 +98,7 @@ int pipe(int* fd) {
   "svc %1     \n"               // make system call SYS_PIPE
   "mov %0, r0 \n"               // assign r  = r0
   : "=r" (r)
-  : "I" (SYS_PIPE),  "r" (fd),
+  : "I" (SYS_PIPE),  "r" (fd)
   : "r0");
 
   return r;

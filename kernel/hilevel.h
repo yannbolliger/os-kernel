@@ -18,6 +18,7 @@
 #include "lolevel.h"
 #include "int.h"
 #include "kernel.h"
+#include "io.h"
 #include "sched.h"
 #include "pipe.h"
 
