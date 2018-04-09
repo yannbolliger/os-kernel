@@ -1,14 +1,7 @@
 
 #include "hilevel.h"
 
-
-/**
- * Configure system at start
- *  - initialise timer for pre-emptive multitasking
- */
-void hilevel_handler_rst(ctx_t* ctx) {
-
-  // Timer config
+void configure_timer_rst() {
   TIMER0->Timer1Load  = TIMER_INTERVAL_TICKS;
   // 32-bit timer
   TIMER0->Timer1Ctrl  = 0x00000002;
@@ -18,8 +11,13 @@ void hilevel_handler_rst(ctx_t* ctx) {
   TIMER0->Timer1Ctrl |= 0x00000020;
   // enable timer
   TIMER0->Timer1Ctrl |= 0x00000080;
+  return;
+}
 
-  // General interrupt controller config
+/**
+ * General interrupt controller config
+ */
+void configure_gic_rst() {
   // unmask all interrupts
   GICC0->PMR          = 0x000000F0;
   // enable timer interrupt
@@ -28,6 +26,17 @@ void hilevel_handler_rst(ctx_t* ctx) {
   GICC0->CTLR         = 0x00000001;
   // enable GIC distributor
   GICD0->CTLR         = 0x00000001;
+  return;
+}
+
+/**
+ * Configure system at start
+ *  - initialise timer for pre-emptive multitasking
+ */
+void hilevel_handler_rst(ctx_t* ctx) {
+
+  configure_timer_rst();
+  configure_gic_rst();
 
   sched_rst(ctx);
   int_enable_irq();
@@ -56,7 +65,6 @@ void hilevel_handler_irq(ctx_t* ctx) {
 
   // Acknowledge interrupt identifier
   GICC0->EOIR = id;
-
   return;
 }
 
@@ -82,11 +90,16 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
       char* x              = (char*)(ctx->gpr[1]);
       int n                = (int)  (ctx->gpr[2]);
 
-      if (STDIN_FILENO == file_descriptor && n >= 0) {
+      if (file_descriptor < 0) {
+        ctx->gpr[0] = -1;
+      }
+      else if (STDIN_FILENO == file_descriptor && n >= 0) {
         // return value
         ctx->gpr[0] = uart_write(UART0, x, n);
       }
-      else ctx->gpr[0] = -1;
+      else {
+        ctx->gpr[0] = pipe_write(executing_process(), file_descriptor, x, n);
+      }
       break;
     }
 
@@ -131,6 +144,10 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
       // return error code
       ctx->gpr[0] = sched_terminate(pid, ctx);
+      break;
+    }
+
+    case SYS_PIPE: {
       break;
     }
 

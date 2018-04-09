@@ -19,5 +19,6 @@
 #include "int.h"
 #include "kernel.h"
 #include "sched.h"
+#include "pipe.h"
 
- #endif
+#endif

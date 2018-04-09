@@ -7,7 +7,8 @@
 #include "kernel.h"
 
 /**
- * Memory boundaries (MUST ALSO UPDATE LINKER SCRIPT!)
+ * Memory boundaries
+ * (ALSO UPDATE THESE IN THE LINKER SCRIPT!)
  */
 #define MEM_LO 0x70020000
 #define MEM_HI 0x90000000
@@ -17,9 +18,9 @@
 
 uint32_t mem_allocate(const size_t n_blocks);
 
-size_t mem_deallocate(const uint32_t address, const size_t n_blocks);
+size_t   mem_deallocate(const uint32_t address, const size_t n_blocks);
 
-size_t mem_copy(const uint32_t src_addr, const uint32_t dst_addr,
+size_t   mem_copy(const uint32_t src_addr, const uint32_t dst_addr,
     const size_t n_blocks);
 
 
