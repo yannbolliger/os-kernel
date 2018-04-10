@@ -90,16 +90,7 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
       char* x              = (char*)(ctx->gpr[1]);
       int n                = (int)  (ctx->gpr[2]);
 
-      if (file_descriptor < 0) {
-        ctx->gpr[0] = -1;
-      }
-      else if (STDIN_FILENO == file_descriptor && n >= 0) {
-        // return value
-        ctx->gpr[0] = uart_write(UART0, x, n);
-      }
-      else {
-        ctx->gpr[0] = pipe_write(executing_process(), file_descriptor, x, n);
-      }
+      ctx->gpr[0] = io_write(executing_process(), file_descriptor, x, n);
       break;
     }
 

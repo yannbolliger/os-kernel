@@ -3,11 +3,7 @@
 
 #include "pipe.h"
 
-typedef struct {
-  uint32_t mem_base_addr;
-  size_t head;
-  size_t tail;
-} pipe_t;
+
 
 pipe_t pipe_table[PIPE_MAX];
 size_t pipe_table_tail = 0;
