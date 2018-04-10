@@ -18,7 +18,7 @@ int pipe_create(const pid_t pid, int* fd) {
   pipe_t* pipe = &pipe_table[pipe_table_tail];
   pipe->mem_base_addr = mem_base_addr;
   pipe->head = 0;
-  pipe->tail = 0;
+  pipe->length = 0;
 
   fd_t fd_read  = { R_OK, pipe };
   fd_t fd_write = { W_OK, pipe };
@@ -39,12 +39,32 @@ int pipe_create(const pid_t pid, int* fd) {
   return 0;
 }
 
-int pipe_read(const pid_t pid, const int fd, char* buf, const size_t n) {
+int pipe_read(const pipe_t* pipe, char* buf, const size_t n) {
   return 0;
 }
 
-int pipe_write(const pid_t pid, const int fd, const char* buf, const size_t n) {
-  return 0;
+int pipe_write(const pipe_t* pipe, const char* buf, const size_t n) {
+  if (NULL == pipe) return ERROR_CODE;
+
+  size_t n_to_write = n;
+  if (pipe->length + n > MEM_BLOCK_SIZE) {
+    n_to_write = MEM_BLOCK_SIZE - pipe->length;
+  }
+
+  if (pipe->index + n_to_write >= MEM_BLOCK_SIZE) {
+    const size_t n_from_0 = (pipe->index + n_to_write) % MEM_BLOCK_SIZE;
+
+    memcpy((char *) (pipe->mem_base_addr + pipe->index), buf, n_to_write - n_from_0);
+    memcpy((char *) (pipe->mem_base_addr), buf, n_from_0);
+    pipe->index = n_from_0;
+  }
+  else {
+    memcpy((char *) (pipe->mem_base_addr + pipe->index), buf, n_to_write);
+    pipe->index += n_to_write;
+  }
+
+  pipe->length += n_to_write;
+  return n_to_write;
 }
 
 int pipe_close(const pid_t pid, const int fd) {
