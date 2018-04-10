@@ -86,11 +86,21 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
     // int write(fd, x, n)
     case SYS_WRITE: {
-      int file_descriptor  = (int)  (ctx->gpr[0]);
-      char* x              = (char*)(ctx->gpr[1]);
-      int n                = (int)  (ctx->gpr[2]);
+      const int fd   = (int)  (ctx->gpr[0]);
+      const char* x  = (char*)(ctx->gpr[1]);
+      const size_t n = (int)  (ctx->gpr[2]);
 
-      ctx->gpr[0] = io_write(executing_process(), file_descriptor, x, n);
+      ctx->gpr[0] = io_write(executing_process(), fd, x, n);
+      break;
+    }
+
+    // int  read(int fd, void* x, size_t n)
+    case SYS_READ: {
+      const int fd   = (int)  (ctx->gpr[0]);
+      char* x        = (char*)(ctx->gpr[1]);
+      const size_t n = (int)  (ctx->gpr[2]);
+
+      ctx->gpr[0] = io_read(executing_process(), fd, x, n);
       break;
     }
 
@@ -138,7 +148,11 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
       break;
     }
 
+    // int pipe(int* fd);
     case SYS_PIPE: {
+      int* fd = (int *) (ctx->gpr[0]);
+
+      ctx->gpr[0] = pipe_create(executing_process(), fd);
       break;
     }
 
