@@ -8,17 +8,25 @@
 #include "libc.h"
 
 /**
- * KERNEL HEADER
+ * KERNEL
  * Main shared interface for kernel-wide definitions
  */
 
-#define MAX_NUMBER_PROCESSES (200)
-
-
-#define ERROR_CODE -1
+/**
+ * The maximum number of processes that the system can run simultaneously.
+ */
+#define PROCESS_MAX (256)
 
 /**
- * Type Definitions Kernel-wide
+ * The maximum number of files a process can have opened simultaneously.
+ * According to the POSIX standard.
+ */
+#define OPEN_MAX (32)
+
+#define ERROR_CODE (-1)
+
+/**
+ * Types
  */
 
 // All possible states of a process
@@ -40,6 +48,12 @@ typedef struct {
   uint32_t lr;
 } ctx_t;
 
+typedef struct {
+  const int fd;
+  int mode;
+  void * file;
+} fd_t;
+
 // PCB Process control block type
 typedef struct {
   pid_t pid;
@@ -48,6 +62,7 @@ typedef struct {
   uint64_t deadline;
   uint64_t timeslice;
   uint32_t mem_base_addr;
+  fd_t fd_table[OPEN_MAX];
 } pcb_t;
 
 

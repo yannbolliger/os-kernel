@@ -20,7 +20,7 @@ typedef struct _rq_entry_t {
 } rq_entry_t;
 
 typedef struct {
-  rq_entry_t run_queue[MAX_NUMBER_PROCESSES];
+  rq_entry_t run_queue[PROCESS_MAX];
   size_t head;
   size_t tail;
   uint64_t jiffies;

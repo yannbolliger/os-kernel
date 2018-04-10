@@ -30,7 +30,7 @@ pcb_t* pcb_of(pid_t pid) {
 
 pid_t create_process(uint32_t cpsr, uint32_t pc) {
   // check if pcb-stack is full
-  if (pcb_table.tail + 1 > MAX_NUMBER_PROCESSES) return 0;
+  if (pcb_table.tail + 1 > PROCESS_MAX) return 0;
 
   // check if memory available
   uint32_t stack_base = mem_allocate(1);

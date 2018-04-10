@@ -41,14 +41,14 @@ int add_process_when_full_test() {
     global_rq.tail == 0
     );
 
-  for (int i = 0; i < MAX_NUMBER_PROCESSES; i++) {
+  for (int i = 0; i < PROCESS_MAX; i++) {
     add_process_rq(100, 0, 0);
   }
 
   _assert_message(
     "Head and tail when full",
     global_rq.head == 0 &&
-    global_rq.tail == MAX_NUMBER_PROCESSES - 1
+    global_rq.tail == PROCESS_MAX - 1
     );
 
   size_t head = global_rq.head;

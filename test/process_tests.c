@@ -90,7 +90,7 @@ int create_process_full_test() {
     0 != create_process(0, 0)
     );
 
-  for (int i = 0; i < MAX_NUMBER_PROCESSES - 2; i++) {
+  for (int i = 0; i < PROCESS_MAX - 2; i++) {
     create_process(0, 0);
   }
 

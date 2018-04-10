@@ -5,7 +5,7 @@ rq_t global_rq = {0};
 
 pid_t add_process_rq(pid_t pid, uint64_t timeslice, uint64_t deadline) {
   rq_entry_t* new_entry = &global_rq.run_queue[global_rq.tail];
-  size_t new_tail = (global_rq.tail + 1) % MAX_NUMBER_PROCESSES;
+  size_t new_tail = (global_rq.tail + 1) % PROCESS_MAX;
 
   // check if full
   if (new_tail == global_rq.head) return 0;
@@ -34,7 +34,7 @@ rq_entry_t* earliest_deadline_rq() {
 
   while (index !=  global_rq.tail) {
     rq_entry_t* current = &global_rq.run_queue[index];
-    index = (index + 1) % MAX_NUMBER_PROCESSES;
+    index = (index + 1) % PROCESS_MAX;
 
     if (current->deadline < earliest_deadline) {
       earliest = current;
@@ -51,7 +51,7 @@ void remove_entry_rq(rq_entry_t* to_remove) {
   // overwrite to_remove in array with first elem of array
   *to_remove = global_rq.run_queue[global_rq.head];
 
-  global_rq.head = (global_rq.head + 1) % MAX_NUMBER_PROCESSES;
+  global_rq.head = (global_rq.head + 1) % PROCESS_MAX;
 }
 
 void remove_pid_rq(pid_t pid_to_remove) {
@@ -59,7 +59,7 @@ void remove_pid_rq(pid_t pid_to_remove) {
 
   while (index != global_rq.tail) {
     rq_entry_t* current = &global_rq.run_queue[index];
-    index = (index + 1) % MAX_NUMBER_PROCESSES;
+    index = (index + 1) % PROCESS_MAX;
 
     if (current->pid == pid_to_remove) {
       remove_entry_rq(current);

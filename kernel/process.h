@@ -9,7 +9,7 @@
 
 
 typedef struct {
-  pcb_t pcb[MAX_NUMBER_PROCESSES];
+  pcb_t pcb[PROCESS_MAX];
   pid_t max_pid;
   pcb_t* executing_pcb;
   size_t tail;
