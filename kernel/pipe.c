@@ -1,6 +1,5 @@
 
 
-
 #include "pipe.h"
 
 
@@ -39,7 +38,7 @@ int pipe_create(const pid_t pid, int* fd) {
   return 0;
 }
 
-int pipe_read(pipe_t* pipe, const char* buf, const size_t n) {
+int pipe_read(pipe_t* pipe, void* buf, const size_t n) {
   if (NULL == pipe) return ERROR_CODE;
 
   size_t n_to_read = (n > pipe->length) ? pipe->length : n;
@@ -47,12 +46,12 @@ int pipe_read(pipe_t* pipe, const char* buf, const size_t n) {
   if (pipe->head + n_to_read >= MEM_BLOCK_SIZE) {
     const size_t n_from_0 = (pipe->head + n_to_read) % MEM_BLOCK_SIZE;
 
-    memcpy(buf, (char *) (pipe->mem_base_addr + pipe->head), n_to_read - n_from_0);
-    memcpy(buf, (char *) (pipe->mem_base_addr), n_from_0);
+    memcpy(buf, (void*) (pipe->mem_base_addr + pipe->head), n_to_read - n_from_0);
+    memcpy(buf, (void*) (pipe->mem_base_addr), n_from_0);
     pipe->head = n_from_0;
   }
   else {
-    memcpy((char *) (pipe->mem_base_addr + pipe->head), buf, n_to_read);
+    memcpy((void*) (pipe->mem_base_addr + pipe->head), buf, n_to_read);
     pipe->head += n_to_read;
   }
 
@@ -60,7 +59,7 @@ int pipe_read(pipe_t* pipe, const char* buf, const size_t n) {
   return n_to_read;
 }
 
-int pipe_write(pipe_t* pipe, const char* buf, const size_t n) {
+int pipe_write(pipe_t* pipe, const void* buf, const size_t n) {
   if (NULL == pipe) return ERROR_CODE;
 
   size_t n_to_write = n;
@@ -71,11 +70,11 @@ int pipe_write(pipe_t* pipe, const char* buf, const size_t n) {
   if (pipe->head + n_to_write >= MEM_BLOCK_SIZE) {
     const size_t n_from_0 = (pipe->head + n_to_write) % MEM_BLOCK_SIZE;
 
-    memcpy((char *) (pipe->mem_base_addr + pipe->head), buf, n_to_write - n_from_0);
-    memcpy((char *) (pipe->mem_base_addr), buf, n_from_0);
+    memcpy((void*) (pipe->mem_base_addr + pipe->head), buf, n_to_write - n_from_0);
+    memcpy((void*) (pipe->mem_base_addr), buf, n_from_0);
   }
   else {
-    memcpy((char *) (pipe->mem_base_addr + pipe->head), buf, n_to_write);
+    memcpy((void*) (pipe->mem_base_addr + pipe->head), buf, n_to_write);
   }
 
   pipe->length += n_to_write;
