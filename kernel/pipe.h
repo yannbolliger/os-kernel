@@ -5,10 +5,11 @@
 #define __PIPE_H
 
 #include "kernel.h"
+#include "io.h"
 #include "mem.h"
 
-#define PIPES_FILENO_LO (STDERR_FILENO + 10)
-#define PIPE_MAX PROCESS_MAX*OPEN_MAX
+
+#define PIPE_MAX (PROCESS_MAX * (OPEN_MAX - 3))
 
 
 int pipe_create(const pid_t pid, int* fd);

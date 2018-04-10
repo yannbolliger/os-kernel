@@ -48,13 +48,20 @@ typedef struct {
   uint32_t lr;
 } ctx_t;
 
+#define R_OK (0x01)
+#define W_OK (0x10)
+
+/**
+ * File descriptor entry for the per-process file descriptor table.
+ */
 typedef struct {
-  const int fd;
-  int mode;
+  int mode;     // as on OR of R_OK and/or W_OK
   void * file;
 } fd_t;
 
-// PCB Process control block type
+/**
+ * PCB Process control block type
+ */
 typedef struct {
   pid_t pid;
   status_t status;
@@ -63,6 +70,7 @@ typedef struct {
   uint64_t timeslice;
   uint32_t mem_base_addr;
   fd_t fd_table[OPEN_MAX];
+  size_t fd_tail;
 } pcb_t;
 
 
