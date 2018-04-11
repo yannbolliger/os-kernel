@@ -127,15 +127,31 @@ int fork_process_test() {
     parent->ctx.sp != child->ctx.sp &&
     parent->mem_base_addr != child->mem_base_addr
     );
+
+  dirty_table_reset();
   return 0;
 }
 
+int destroy_process_test() {
+  // "run one process"
+  pid_t pid = create_process(0, 0);
+  dispatch_process(pid, &ctx);
 
+  _assert_message(
+    "Destroy process cannot destroy executing process.",
+    0 != destroy_process(pid)
+    );
+
+
+  dirty_table_reset();
+  return 0;
+}
 
 int all_process_tests() {
   _verify(pcb_of_test);
   _verify(executing_process_test);
   _verify(create_process_full_test);
   _verify(fork_process_test);
+  _verify(destroy_process_test);
   return 0;
 }
