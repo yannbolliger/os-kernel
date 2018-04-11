@@ -31,11 +31,11 @@
 
 // All possible states of a process
 typedef enum {
+  STATUS_TERMINATED,
   STATUS_CREATED,
   STATUS_READY,
   STATUS_EXECUTING,
   STATUS_WAITING,
-  STATUS_TERMINATED
 } status_t;
 
 // Execution context type

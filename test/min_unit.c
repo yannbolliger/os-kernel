@@ -9,8 +9,7 @@ extern int all_tests_sched();
 extern int all_process_tests();
 
 int all_tests() {
-  return all_tests_sched() + all_tests_sched_rq() +
-         all_process_tests();
+  return all_process_tests() + all_tests_sched() + all_tests_sched_rq();
 }
 
 int main(int argc, char **argv) {

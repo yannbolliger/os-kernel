@@ -11,7 +11,6 @@ void main_console() {
   return;
 }
 
-extern pcb_table_t pcb_table;
 
 
 /**

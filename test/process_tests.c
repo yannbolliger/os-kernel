@@ -27,8 +27,11 @@ uint32_t mem_allocate(size_t n) {
  */
 
 void dirty_table_reset() {
-  pcb_table.tail = 0;
+  pcb_table.max_pid = 0;
   pcb_table.executing_pcb = NULL;
+  for (int i = 0; i < PROCESS_MAX; ++i) {
+    pcb_table.pcb[i].status = STATUS_TERMINATED;
+  }
 }
 
 /**
@@ -117,13 +120,13 @@ int fork_process_test() {
     parent->ctx.cpsr == child->ctx.cpsr &&
     parent->ctx.lr == child->ctx.lr &&
     parent->ctx.pc == child->ctx.pc
-  );
+    );
 
   _assert_message(
     "Child and parent do NOT have the same sp and mem_base_addr",
     parent->ctx.sp != child->ctx.sp &&
     parent->mem_base_addr != child->mem_base_addr
-  );
+    );
   return 0;
 }
 

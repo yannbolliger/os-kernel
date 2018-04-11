@@ -12,7 +12,6 @@ typedef struct {
   pcb_t pcb[PROCESS_MAX];
   pid_t max_pid;
   pcb_t* executing_pcb;
-  size_t tail;
 } pcb_table_t;
 
 pcb_t* pcb_of(pid_t pid);

@@ -4,49 +4,69 @@
 
 pcb_table_t pcb_table = {0};
 
+static inline size_t index_of(pid_t pid) {
+  return (pid - 1 + PROCESS_MAX) % PROCESS_MAX;
+}
+
 pid_t executing_process() {
   if (pcb_table.executing_pcb == NULL) return 0;
   else return pcb_table.executing_pcb->pid;
 }
 
+/**
+ * Returns the PCB for a given PID iff the process has been created and is not
+ * terminated yet e.g. for "non-zombie" processes.
+ *
+ * @param pid_t valid PID
+ * @returns pcb_t* pointer to the PCB or NULL if not found
+ */
 pcb_t* pcb_of(pid_t pid) {
-  // fast lookup for executing pcb
-  if (pid == executing_process()) {
-    return pcb_table.executing_pcb;
-  }
-  // fast lookup for tail (last created process)
-  else if (pid == pcb_table.pcb[pcb_table.tail - 1].pid) {
-    return &pcb_table.pcb[pcb_table.tail - 1];
-  }
-  // slow O(n) lookup for arbitrary processes
-  else {
-    size_t index = 0;
-    while (index < pcb_table.tail && pcb_table.pcb[index].pid != pid) index++;
+  if (pid <= pcb_table.max_pid || pid > 0) {
+    pcb_t* pcb = &pcb_table.pcb[index_of(pid)];
 
-    if (pcb_table.pcb[index].pid == pid) return &pcb_table.pcb[index];
-    else return NULL;
+    if (pcb->status != STATUS_TERMINATED && pcb->pid == pid) return pcb;
   }
+  return NULL;
+}
+
+pid_t get_next_pid() {
+  size_t index = 0;
+  pcb_t* next_pcb = NULL;
+
+  do  {
+    index++;
+    next_pcb = &pcb_table.pcb[index_of(pcb_table.max_pid + index)];
+  } while (index < PROCESS_MAX && next_pcb->status != STATUS_TERMINATED);
+
+  if (next_pcb->status == STATUS_TERMINATED) return pcb_table.max_pid + index;
+  else return 0;
 }
 
 pid_t create_process(uint32_t cpsr, uint32_t pc) {
-  // check if pcb-stack is full
-  if (pcb_table.tail + 1 > PROCESS_MAX) return 0;
+  pid_t pid = get_next_pid();
+  if (pid == 0) return 0;
 
   // check if memory available
   uint32_t stack_base = mem_allocate(1);
   if (stack_base == 0) return 0;
 
   // reset pcb
-  pcb_t* pcb = &pcb_table.pcb[pcb_table.tail++];
+  pcb_t* pcb = &pcb_table.pcb[index_of(pid)];
   memset(pcb, 0, sizeof(pcb_t));
 
-  // set values
-  pcb->pid      = ++pcb_table.max_pid;
+  // set PID
+  pcb->pid      = pid;
+  pcb_table.max_pid = pid;
+
+  // set execution context
   pcb->ctx.cpsr = cpsr;
   pcb->ctx.pc   = pc;
+  // stack grows downwards
   pcb->ctx.sp   = mem_block_addr_end(stack_base);
+
   pcb->status   = STATUS_READY;
   pcb->mem_base_addr  = stack_base;
+  // reserve first 3 for std streams
   pcb->fd_tail  = STDERR_FILENO + 1;
 
   return pcb->pid;
@@ -54,28 +74,18 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
 
 /**
  * Destroy a process and remove it from the PCB table.
- * In order to keep the table dense, the last element of the stack is copied
- * into the empty space.
+ *
  */
 int _destroy_process(pcb_t* pcb_to_remove) {
-  if (pcb_to_remove == NULL) return ERROR_CODE;
-
-  // backup pids
-  pid_t pid_to_remove = pcb_to_remove->pid;
-  pid_t executing_pid = executing_process();
+  if (pcb_to_remove == NULL ||
+      pcb_to_remove->pid == executing_process()) return ERROR_CODE;
 
   // free stack memory
   size_t n = mem_deallocate(pcb_to_remove->mem_base_addr, 1);
   if (n != 1) return ERROR_CODE;
 
-  // fill empty space
-  *pcb_to_remove = pcb_table.pcb[--pcb_table.tail];
-  pcb_t* newly_filled_pcb = pcb_to_remove;
-  pcb_to_remove = NULL;
-
-  if (newly_filled_pcb->pid == executing_pid) {
-    pcb_table.executing_pcb = newly_filled_pcb;
-  }
+  // discard pcb
+  pcb_to_remove->status = STATUS_TERMINATED;
   return 0;
 }
 
