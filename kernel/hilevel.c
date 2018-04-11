@@ -134,7 +134,11 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
     case SYS_EXIT: {
       int x = ctx->gpr[0];
 
-      sched_terminate(executing_process(), ctx);
+      int error = sched_terminate(executing_process(), ctx);
+      if (error) {
+        uart_write(UART0, "Illegal state.\n", 15);
+        sched(ctx);
+      }
       break;
     }
 

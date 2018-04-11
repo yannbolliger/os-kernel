@@ -4,7 +4,7 @@
 #include "libc.h"
 
 
-void main_pipe1() {
+void main_pipe2() {
   int fd[2] = {0};
 
   // open pipe

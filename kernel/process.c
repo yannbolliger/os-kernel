@@ -77,8 +77,7 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
  *
  */
 int _destroy_process(pcb_t* pcb_to_remove) {
-  if (pcb_to_remove == NULL ||
-      pcb_to_remove->pid == executing_process()) return ERROR_CODE;
+  if (pcb_to_remove == NULL) return ERROR_CODE;
 
   // free stack memory
   size_t n = mem_deallocate(pcb_to_remove->mem_base_addr, 1);
