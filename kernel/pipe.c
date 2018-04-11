@@ -47,7 +47,7 @@ int pipe_read(pipe_t* pipe, void* buf, const size_t n) {
     const size_t n_from_0 = (pipe->head + n_to_read) % MEM_BLOCK_SIZE;
 
     memcpy(buf, (void*) (pipe->mem_base_addr + pipe->head), n_to_read - n_from_0);
-    memcpy(buf, (void*) (pipe->mem_base_addr), n_from_0);
+    memcpy(buf + (n_to_read - n_from_0), (void*) (pipe->mem_base_addr), n_from_0);
     pipe->head = n_from_0;
   }
   else {
@@ -67,14 +67,15 @@ int pipe_write(pipe_t* pipe, const void* buf, const size_t n) {
     n_to_write = MEM_BLOCK_SIZE - pipe->length;
   }
 
-  if (pipe->head + n_to_write >= MEM_BLOCK_SIZE) {
-    const size_t n_from_0 = (pipe->head + n_to_write) % MEM_BLOCK_SIZE;
+  size_t index = pipe->head + pipe->length;
+  if (index + n_to_write >= MEM_BLOCK_SIZE) {
+    const size_t n_from_0 = (index + n_to_write) % MEM_BLOCK_SIZE;
 
-    memcpy((void*) (pipe->mem_base_addr + pipe->head), buf, n_to_write - n_from_0);
-    memcpy((void*) (pipe->mem_base_addr), buf, n_from_0);
+    memcpy((void*) (pipe->mem_base_addr + index), buf, n_to_write - n_from_0);
+    memcpy((void*) (pipe->mem_base_addr), buf + (n_to_write - n_from_0), n_from_0);
   }
   else {
-    memcpy((void*) (pipe->mem_base_addr + pipe->head), buf, n_to_write);
+    memcpy((void*) (pipe->mem_base_addr + index), buf, n_to_write);
   }
 
   pipe->length += n_to_write;

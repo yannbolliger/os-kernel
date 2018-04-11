@@ -60,7 +60,10 @@ void main_pipe2() {
     write(STDOUT_FILENO, output, bytes_read);
   }
 
-  if (bytes_read == 0) exit(EXIT_SUCCESS);
+  if (bytes_read == 0) {
+    write(STDOUT_FILENO, "\nSuccessfully read entire pipe.\n", 32);
+    exit(EXIT_SUCCESS);
+  }
   else {
     write(STDOUT_FILENO, "Failed to read entire pipe.\n", 28);
     exit(EXIT_FAILURE);
