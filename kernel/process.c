@@ -47,6 +47,7 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
   pcb->ctx.sp   = mem_block_addr_end(stack_base);
   pcb->status   = STATUS_READY;
   pcb->mem_base_addr  = stack_base;
+  pcb->fd_tail  = STDERR_FILENO + 1;
 
   return pcb->pid;
 }

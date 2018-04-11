@@ -25,7 +25,7 @@ int pipe_create(const pid_t pid, int* fd) {
   int fd_int_read  = set_fd(pid, fd_read);
   int fd_int_write = set_fd(pid, fd_write);
 
-  if (fd_int_read < 0 || fd_int_write) {
+  if (fd_int_read < 0 || fd_int_write < 0) {
     mem_deallocate(mem_base_addr, 1);
     return ERROR_CODE;
   }
@@ -51,7 +51,7 @@ int pipe_read(pipe_t* pipe, void* buf, const size_t n) {
     pipe->head = n_from_0;
   }
   else {
-    memcpy((void*) (pipe->mem_base_addr + pipe->head), buf, n_to_read);
+    memcpy(buf, (void*) (pipe->mem_base_addr + pipe->head), n_to_read);
     pipe->head += n_to_read;
   }
 
