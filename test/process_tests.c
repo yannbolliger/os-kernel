@@ -22,6 +22,14 @@ uint32_t mem_allocate(size_t n) {
   return 0x10000000 + addr;
 }
 
+int io_close() {
+  return 0;
+}
+
+void pipe_fork() {
+  return;
+}
+
 /**
  * Helpers
  */
