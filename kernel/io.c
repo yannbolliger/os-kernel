@@ -25,10 +25,14 @@ size_t uart_write(PL011_t* uart, const char* x, const size_t n) {
 int set_fd(const pid_t pid, const fd_t fd) {
   pcb_t* pcb = pcb_of(pid);
 
-  if (OPEN_MAX == pcb->fd_tail) return ERROR_CODE;
+  size_t index = STDERR_FILENO + 1;
+  while (index < OPEN_MAX && pcb->fd_table[index].mode != 0) index++;
 
-  pcb->fd_table[pcb->fd_tail] = fd;
-  return pcb->fd_tail++;
+  if (index == OPEN_MAX) return ERROR_CODE;
+  else {
+    pcb->fd_table[index] = fd;
+    return index;
+  }
 }
 
 fd_t* get_fd(const pid_t pid, const int fd) {

@@ -70,7 +70,6 @@ typedef struct {
   uint64_t timeslice;
   uint32_t mem_base_addr;
   fd_t fd_table[OPEN_MAX];
-  size_t fd_tail;
 } pcb_t;
 
 
