@@ -1,11 +1,5 @@
-/* Copyright (C) 2017 Daniel Page <csdsp@bristol.ac.uk>
- *
- * Use of this source code is restricted per the CC BY-NC-ND license, a copy of
- * which can be found via http://creativecommons.org (and should be included as
- * LICENSE.txt within the associated archive or repository).
- */
 
-#include "console.h"
+#include "cool_console.h"
 
 /* The following functions are special-case versions of a) writing, and
  * b) reading a string from the UART (the latter case returning once a
@@ -92,7 +86,7 @@ void* load(char* x) {
  *    would terminate the process whose PID is 3.
  */
 
-void main_console() {
+void main_cool_console() {
   char* p, x[1024];
 
   while (1) {
