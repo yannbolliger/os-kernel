@@ -20,16 +20,16 @@
  * Uncomment this line:
  */
 
-#include "libc.h"
+//#include "libc.h"
 
 /**
  * RUN on POSIX.
  * Uncomment these lines:
  */
 
-// #include <stdlib.h>
-// #include <stdio.h>
-// #include <unistd.h>
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <unistd.h>
 
 #define PHIL_NUMBER (16)
 #define ROUNDS (10)
