@@ -19,6 +19,7 @@ typedef struct {
 } pipe_t;
 
 int pipe_create(const pid_t pid, int* fd);
+void pipe_fork(pipe_t* pipe);
 int pipe_read(pipe_t* pipe, void* buf, const size_t n);
 int pipe_write(pipe_t* pipe, const void* buf, const size_t n);
 int pipe_close(const pid_t pid, const int fd);

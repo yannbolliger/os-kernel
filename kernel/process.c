@@ -55,7 +55,7 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
   memset(pcb, 0, sizeof(pcb_t));
 
   // set PID
-  pcb->pid      = pid;
+  pcb->pid          = pid;
   pcb_table.max_pid = pid;
 
   // set execution context
@@ -66,8 +66,6 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
 
   pcb->status   = STATUS_READY;
   pcb->mem_base_addr  = stack_base;
-  // reserve first 3 for std streams
-  pcb->fd_tail  = STDERR_FILENO + 1;
 
   return pcb->pid;
 }
@@ -83,6 +81,11 @@ int _destroy_process(pcb_t* pcb_to_remove) {
   // free stack memory
   size_t n = mem_deallocate(pcb_to_remove->mem_base_addr, 1);
   if (n != 1) return ERROR_CODE;
+
+  // close all open fds
+  for (size_t i = 0; i < OPEN_MAX; i++) {
+    io_close(pcb_to_remove->pid, i);
+  }
 
   // discard pcb
   pcb_to_remove->status = STATUS_TERMINATED;
@@ -112,6 +115,13 @@ pid_t fork_process(pcb_t* const parent) {
   if (n != 1) {
     _destroy_process(child);
     return 0;
+  }
+
+  // copy all fds
+  memcpy(child->fd_table, parent->fd_table, OPEN_MAX*sizeof(fd_t));
+
+  for (size_t i = STDERR_FILENO + 1; i < OPEN_MAX; i++) {
+    pipe_fork(child->fd_table[i].file);
   }
 
   return child_pid;

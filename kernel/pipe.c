@@ -39,6 +39,12 @@ int pipe_create(const pid_t pid, int* fd) {
   return 0;
 }
 
+void pipe_fork(pipe_t* pipe) {
+  if (NULL == pipe || 0 == pipe->opened_fds) return;
+
+  pipe->opened_fds++;
+}
+
 int pipe_read(pipe_t* pipe, void* buf, const size_t n) {
   if (NULL == pipe || 0 == pipe->opened_fds) return ERROR_CODE;
 
