@@ -5,7 +5,8 @@
 
 #include <string.h>
 #include "kernel.h"
-#include "mem.h"
+#include "io.h"
+#include "pipe.h"
 
 
 typedef struct {

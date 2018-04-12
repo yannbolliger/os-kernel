@@ -58,14 +58,15 @@ const char* topics[TOPIC_NUMBER] = {
  * waiting, eating and thinking times.
  */
 
-#define RAND_MAX (20)
-const int rand_int[RAND_MAX] = {
-  13, 7, 3, 19, 0, 5, 11, 12, 16, 4, 2, 9, 18, 15, 6, 14, 8, 10, 17, 1,
+#define RAND_LENGTH (20)
+const int rand_int[RAND_LENGTH] = {
+  16807, 15089, 44249, 3114, 46978, 56008, 36568, 2558, 12099, 1101, 39064,
+  15445, 4748, 56290, 54451, 14151, 14615, 16657, 50072, 18772
 };
 
 int rand_index;
 int rand_next() {
-  rand_index = (rand_index + id) % RAND_MAX;
+  rand_index = (rand_index + id) % RAND_LENGTH;
   return rand_int[rand_index];
 }
 
@@ -100,8 +101,8 @@ void close_all_except_own_fork_pipes() {
   // close all other fds
   for (size_t i = 0; i < PHIL_NUMBER; i++) {
     if (i != id && i != (id + 1) % PHIL_NUMBER) {
-      close(fork_pipes[2*i]);
-      close(fork_pipes[2*i + 1]);
+      //close(fork_pipes[2*i]);
+      //close(fork_pipes[2*i + 1]);
     }
   }
 }
@@ -193,4 +194,8 @@ int main() {
   }
 
   exit(EXIT_SUCCESS);
+}
+
+void main_philosophers() {
+  main();
 }
