@@ -1,41 +1,17 @@
 
 #include "cool_console.h"
 
-/* The following functions are special-case versions of a) writing, and
- * b) reading a string from the UART (the latter case returning once a
- * carriage return character has been read, or a limit is reached).
- */
-
-void puts(char* x, int n) {
-  for (int i = 0; i < n; i++) {
-    PL011_putc(UART1, x[i], true);
-  }
-}
-
-void gets(char* x, int n) {
-  for (int i = 0; i < n; i++) {
-    x[i] = PL011_getc(UART1, true);
-
-    if (x[i] == '\x0A') {
-      x[i] = '\x00'; break;
-    }
-  }
-}
-
-
-
-extern void main_P3();
-extern void main_P4();
-extern void main_P5();
-extern void main_pipe1();
-extern void main_pipe2();
-
 
 typedef struct {
   void* program_main;
   char program_name[PROGRAM_NAME_MAX + 1];
 } program_t;
 
+extern void main_P3();
+extern void main_P4();
+extern void main_P5();
+extern void main_pipe1();
+extern void main_pipe2();
 
 #define PROGRAM_NUMBER (5)
 program_t programs[PROGRAM_NUMBER] = {
@@ -46,12 +22,11 @@ program_t programs[PROGRAM_NUMBER] = {
   { &main_pipe2, "pipe2" },
 };
 
-void* load (char* x) {
+void* program_load (char* x) {
   for (int i = 0; i < PROGRAM_NUMBER; ++i) {
     if (0 == strcmp(x, programs[i].program_name))
       return programs[i].program_main;
   }
-
   return NULL;
 }
 
@@ -91,12 +66,12 @@ void main_cool_console () {
   char* p, x[1024];
 
   while (1) {
-    puts("kernel $ ", 8);
+    puts("kernel $ ", 9);
     gets(x, 1024);
     p = strtok(x, " ");
 
     if (0 == strcmp(p, "execute")) {
-      void* program = load(strtok(NULL, " "));
+      void* program = program_load(strtok(NULL, " "));
 
       // only fork if valid program requested
       if (NULL != program) {

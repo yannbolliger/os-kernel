@@ -3,8 +3,7 @@
 #include "sched.h"
 
 
-extern void main_console();
-
+extern void main_cool_console();
 
 void run_next_process(ctx_t* ctx) {
   rq_entry_t* edp = earliest_deadline_rq();
@@ -60,7 +59,7 @@ int sched_terminate(pid_t pid_to_remove, ctx_t* ctx) {
  */
 
 void sched_rst(ctx_t* ctx) {
-  pid_t p1 = create_process(0x50, (uint32_t) (&main_console));
+  pid_t p1 = create_process(0x50, (uint32_t) (&main_cool_console));
   sched_process_rq(p1);
 
   run_next_process(ctx);
