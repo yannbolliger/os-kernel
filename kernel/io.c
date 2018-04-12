@@ -75,10 +75,11 @@ int io_close(const pid_t pid, const int fd) {
   fd_t* fildes = get_fd(pid, fd);
   if (fildes == NULL) return ERROR_CODE;
 
-  if (fd < STDERR_FILENO) return ERROR_CODE;
-
-  int err = pipe_close(fildes->file);
-  if (err) return ERROR_CODE;
+  // for non-empty fd, close pipe, otherwise just do nothing
+  if (fildes->file != NULL) {
+    int err = pipe_close(fildes->file);
+    if (err) return ERROR_CODE;
+  }
 
   memset(fildes, 0, sizeof(fd_t));
   return 0;
