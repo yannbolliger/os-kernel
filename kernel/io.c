@@ -66,3 +66,16 @@ int io_write(const pid_t pid, const int fd, const char* x, const size_t n) {
   else
     return pipe_write(fildes->file, x, n);
 }
+
+int io_close(const pid_t pid, const int fd) {
+  fd_t* fildes = get_fd(pid, fd);
+  if (fildes == NULL) return ERROR_CODE;
+
+  if (fd < STDERR_FILENO) return ERROR_CODE;
+
+  int err = pipe_close(fildes->file);
+  if (err) return ERROR_CODE;
+
+  memset(fildes, 0, sizeof(fd_t));
+  return 0;
+}

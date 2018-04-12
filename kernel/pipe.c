@@ -34,12 +34,13 @@ int pipe_create(const pid_t pid, int* fd) {
   pipe_table_tail++;
   fd[0] = fd_int_read;
   fd[1] = fd_int_write;
+  pipe->opened_fds = 2;
 
   return 0;
 }
 
 int pipe_read(pipe_t* pipe, void* buf, const size_t n) {
-  if (NULL == pipe) return ERROR_CODE;
+  if (NULL == pipe || 0 == pipe->opened_fds) return ERROR_CODE;
 
   size_t n_to_read = (n > pipe->length) ? pipe->length : n;
 
@@ -60,7 +61,7 @@ int pipe_read(pipe_t* pipe, void* buf, const size_t n) {
 }
 
 int pipe_write(pipe_t* pipe, const void* buf, const size_t n) {
-  if (NULL == pipe) return ERROR_CODE;
+  if (NULL == pipe || 0 == pipe->opened_fds) return ERROR_CODE;
 
   size_t n_to_write = n;
   if (pipe->length + n > MEM_BLOCK_SIZE) {
@@ -82,6 +83,18 @@ int pipe_write(pipe_t* pipe, const void* buf, const size_t n) {
   return n_to_write;
 }
 
-int pipe_close(const pid_t pid, const int fd) {
+int pipe_close(pipe_t* pipe) {
+  if (NULL == pipe || 0 == pipe->opened_fds) return ERROR_CODE;
+
+  if (pipe->opened_fds > 1) {
+    pipe->opened_fds--;
+    return 0;
+  }
+
+  int err = mem_deallocate(pipe->mem_base_addr, 1);
+  if (err) return ERROR_CODE;
+
+  // clear pipe
+  memset(pipe, 0, sizeof(pipe_t));
   return 0;
 }

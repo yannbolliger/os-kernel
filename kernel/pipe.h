@@ -15,6 +15,7 @@ typedef struct {
   uint32_t mem_base_addr;
   size_t head;
   size_t length;
+  size_t opened_fds;
 } pipe_t;
 
 int pipe_create(const pid_t pid, int* fd);
