@@ -52,3 +52,4 @@ Module.symvers
 Mkfile.old
 dkms.conf
 min_unit
+philosophers
