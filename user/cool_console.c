@@ -22,11 +22,7 @@ void gets(char* x, int n) {
   }
 }
 
-/* Since we lack a *real* loader (as a result of also lacking a storage
- * medium to store program images), the following function approximates
- * one: given a program name from the set of programs statically linked
- * into the kernel image, it returns a pointer to the entry point.
- */
+
 
 extern void main_P3();
 extern void main_P4();
@@ -34,21 +30,26 @@ extern void main_P5();
 extern void main_pipe1();
 extern void main_pipe2();
 
-void* load(char* x) {
-  if     (0 == strcmp(x, "P3")) {
-    return &main_P3;
-  }
-  else if (0 == strcmp(x, "P4")) {
-    return &main_P4;
-  }
-  else if (0 == strcmp(x, "P5")) {
-    return &main_P5;
-  }
-  else if (0 == strcmp(x, "pipe1")) {
-    return &main_pipe1;
-  }
-  else if (0 == strcmp(x, "pipe2")) {
-    return &main_pipe2;
+
+typedef struct {
+  void* program_main;
+  char program_name[PROGRAM_NAME_MAX + 1];
+} program_t;
+
+
+#define PROGRAM_NUMBER (5)
+program_t programs[PROGRAM_NUMBER] = {
+  { &main_P3, "P3" },
+  { &main_P4, "P4" },
+  { &main_P5, "P5" },
+  { &main_pipe1, "pipe1" },
+  { &main_pipe2, "pipe2" },
+};
+
+void* load (char* x) {
+  for (int i = 0; i < PROGRAM_NUMBER; ++i) {
+    if (0 == strcmp(x, programs[i].program_name))
+      return programs[i].program_main;
   }
 
   return NULL;
@@ -86,17 +87,41 @@ void* load(char* x) {
  *    would terminate the process whose PID is 3.
  */
 
-void main_cool_console() {
+void main_cool_console () {
   char* p, x[1024];
 
   while (1) {
-    puts("shell$ ", 7); gets(x, 1024); p = strtok(x, " ");
+    puts("kernel $ ", 8);
+    gets(x, 1024);
+    p = strtok(x, " ");
 
-    if     (0 == strcmp(p, "execute")) {
-      pid_t pid = fork();
+    if (0 == strcmp(p, "execute")) {
+      void* program = load(strtok(NULL, " "));
 
-      if (0 == pid) {
-        exec(load(strtok(NULL, " ")));
+      // only fork if valid program requested
+      if (NULL != program) {
+        pid_t pid = fork();
+
+        // child starts new program
+        if (0 == pid) {
+          exec(program);
+        }
+        // parent informs shell user
+        else if (pid > 0) {
+          char number[3];
+          itoa(number, pid);
+          puts("Started process with PID: ", 26);
+          puts(number, 3);
+          puts(".\n", 2);
+        }
+        // error handling
+        else {
+          puts("Failed to start process.\n", 25);
+        }
+      }
+      // error handling
+      else {
+        puts("This program is not available.\n", 31);
       }
     }
     else if (0 == strcmp(p, "terminate")) {

@@ -12,4 +12,6 @@
 
 #include "libc.h"
 
+#define PROGRAM_NAME_MAX (32)
+
 #endif
