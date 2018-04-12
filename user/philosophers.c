@@ -1,17 +1,5 @@
 
-
-//#include "libc.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-
-#define PHIL_NUMBER (16)
-#define ROUNDS (10)
-
-typedef enum {
-  FIRST_FORK,
-  SECOND_FORK
-} fork_t;
+#include "philosophers.h"
 
 int fork_pipes[PHIL_NUMBER * 2];
 int fork_pipes_read[2];
