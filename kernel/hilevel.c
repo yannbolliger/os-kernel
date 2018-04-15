@@ -156,6 +156,14 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
       break;
     }
 
+    // int close(int fd)
+    case SYS_CLOSE: {
+      int fd = (int) ctx->gpr[0];
+
+      ctx->gpr[0] = io_close(executing_process(), fd);
+      break;
+    }
+
     // unknown/unsupported
     default: {
       break;

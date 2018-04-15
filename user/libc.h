@@ -38,6 +38,7 @@ typedef int pid_t;
 #define SYS_KILL      (0x06)
 #define SYS_NICE      (0x07)
 #define SYS_PIPE      (0x08)
+#define SYS_CLOSE     (0x09)
 
 #define SIG_TERM      (0x00)
 #define SIG_QUIT      (0x01)
@@ -64,6 +65,8 @@ extern int  read(int fd,       void* x, size_t n);
 
 // create a pipe and save its identifiers in fd; return 0 on success, -1 on failure
 extern int  pipe(int fd[2]);
+// close the file with identifier fd, return 0 on success, -1 on failure
+extern int close(int fd);
 
 // perform fork, returning 0 iff. child or > 0 iff. parent process
 extern int  fork();
