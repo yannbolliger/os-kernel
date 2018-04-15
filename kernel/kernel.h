@@ -21,7 +21,7 @@
  * The maximum number of files a process can have opened simultaneously.
  * According to the POSIX standard.
  */
-#define OPEN_MAX (32)
+#define OPEN_MAX (64)
 
 #define ERROR_CODE (-1)
 

@@ -21,7 +21,7 @@ SECTIONS {
   * processes. (MUST CORRESPOND WITH LIMITS in mem.h)
   */
   end_of_fixed_mem = .;
-  .  = 0x70060000;
+  .  = 0x700A0000;
   mem_lo = .;
   . = 0x90000000;
   mem_hi = .;

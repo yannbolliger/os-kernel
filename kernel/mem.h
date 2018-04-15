@@ -10,7 +10,7 @@
  * Memory boundaries
  * (ALSO UPDATE THESE IN THE LINKER SCRIPT!)
  */
-#define MEM_LO 0x70060000
+#define MEM_LO 0x700A0000
 #define MEM_HI 0x90000000
 
 #define MEM_BLOCK_SIZE (0x1000)
