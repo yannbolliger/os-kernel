@@ -9,8 +9,7 @@ int fork_pipes[PHIL_NUMBER * 2];
 /**
  * Particular pipe fds of a single child process (philosopher).
  */
-int fork_pipes_read[2];
-int fork_pipes_write[2];
+
 
 #define PHIL_NAME_LENGTH (11)
 const char* names[PHIL_NUMBER] = {
@@ -71,8 +70,12 @@ int rand_next(const size_t id) {
  * one (he's leftie).
  * The philosophers always pick up their primary frok first. In that way the
  * forks are always aquired in the same order by all the philosophers.
+ *
+ *
  */
-void close_all_except_own_fork_pipes(const size_t id) {
+void close_all_except_own(const size_t id, int fork_pipes_read[2],
+    int fork_pipes_write[2]) {
+
   // write to own fork e.g. put own fork on the table
   write(fork_pipes[id*2 + 1], "X", 1);
 
@@ -95,8 +98,8 @@ void close_all_except_own_fork_pipes(const size_t id) {
   // close all other fds
   for (size_t i = 0; i < PHIL_NUMBER; i++) {
     if (i != id && i != (id + 1) % PHIL_NUMBER) {
-      //close(fork_pipes[2*i]);
-      //close(fork_pipes[2*i + 1]);
+      close(fork_pipes[2*i]);
+      close(fork_pipes[2*i + 1]);
     }
   }
 }
@@ -121,9 +124,9 @@ void think(const size_t id) {
   write(STDOUT_FILENO, "\n", 1);
 }
 
-int picked_up(const fork_t fork) {
+int picked_up(const int fork_pipe_read) {
   char x;
-  int bytes_read = read(fork_pipes_read[fork], &x, 1);
+  int bytes_read = read(fork_pipe_read, &x, 1);
 
   if (bytes_read < 0) {
     write(STDERR_FILENO, "Problem with reading from pipe.\n", 32);
@@ -132,17 +135,22 @@ int picked_up(const fork_t fork) {
   else return bytes_read;
 }
 
-void put_down(const fork_t fork) {
-  write(fork_pipes_write[fork], "X", 1);
+void put_down(const int fork_pipe_write) {
+  write(fork_pipe_write, "X", 1);
 }
 
-void eat(const size_t id) {
+void eat(const size_t id, const int fork_pipes_read[2],
+    const int fork_pipes_write[2]) {
 
-  while (!picked_up(FIRST_FORK)) { /* busily wait */ };
+  while (!picked_up(fork_pipes_read[FIRST_FORK])) {
+    /* busily wait */
+  };
   write(STDOUT_FILENO, name(id), PHIL_NAME_LENGTH);
   write(STDOUT_FILENO, " has one fork.\n", 15);
 
-  while (!picked_up(SECOND_FORK)) { /* busily wait */ };
+  while (!picked_up(fork_pipes_read[SECOND_FORK])) {
+    /* busily wait */
+  };
   write(STDOUT_FILENO, name(id), PHIL_NAME_LENGTH);
   write(STDOUT_FILENO, " has both forks and starts to eat!\n", 35);
 
@@ -150,16 +158,19 @@ void eat(const size_t id) {
 
   write(STDOUT_FILENO, name(id), PHIL_NAME_LENGTH);
   write(STDOUT_FILENO, " releases its two forks.\n", 25);
-  put_down(FIRST_FORK);
-  put_down(SECOND_FORK);
+  put_down(fork_pipes_write[FIRST_FORK]);
+  put_down(fork_pipes_write[SECOND_FORK]);
 }
 
 void philosophize(const size_t id) {
-  close_all_except_own_fork_pipes(id);
+  int fork_pipes_read[2];
+  int fork_pipes_write[2];
+
+  close_all_except_own(id, fork_pipes_read, fork_pipes_write);
 
   for (size_t i = 0; i < ROUNDS; i++) {
     think(id);
-    eat(id);
+    eat(id, fork_pipes_read, fork_pipes_write);
   }
 
   write(STDOUT_FILENO, name(id), PHIL_NAME_LENGTH);
