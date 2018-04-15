@@ -67,7 +67,7 @@ const int rand_int[RAND_LENGTH] = {
 int rand_index;
 int rand_next() {
   rand_index = (rand_index + id) % RAND_LENGTH;
-  return rand_int[rand_index];
+  return rand_int[rand_index] % 256;
 }
 
 /**
@@ -99,7 +99,7 @@ void close_all_except_own_fork_pipes() {
   }
 
   // close all other fds
-  for (size_t i = 0; i < PHIL_NUMBER; i++) {
+  for (int i = 0; i < PHIL_NUMBER; i++) {
     if (i != id && i != (id + 1) % PHIL_NUMBER) {
       //close(fork_pipes[2*i]);
       //close(fork_pipes[2*i + 1]);
@@ -173,12 +173,12 @@ void philosophize(const int p_id) {
   exit(EXIT_SUCCESS);
 }
 
-int main() {
+void main_philosophers() {
 
   for (size_t i = 0; i < PHIL_NUMBER; i++) {
     int err = pipe(fork_pipes + (i * 2));
     if (err) {
-      write(STDERR_FILENO, "Failed to create 16 forks.\n", 27);
+      write(STDERR_FILENO, "Failed to create 16 forks (pipes).\n", 27);
       exit(EXIT_FAILURE);
     }
   }
@@ -196,6 +196,6 @@ int main() {
   exit(EXIT_SUCCESS);
 }
 
-void main_philosophers() {
-  main();
+int main(void) {
+  main_philosophers();
 }
