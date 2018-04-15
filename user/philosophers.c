@@ -27,14 +27,14 @@ const char* names[PHIL_NUMBER] = {
   "Rousseau   ",
   "Hobbes     ",
   "Plato      ",
+  "Nietzsche  ",
+  "Locke      ",
   "Camus      ",
-  "Adams      ",
-  "P11        ",
-  "P12        ",
-  "P13        ",
-  "P14        ",
-  "P15        ",
-  "P16        ",
+  "Sartre     ",
+  "Arendt     ",
+  "Confuzius  ",
+  "Marx       ",
+  "Russel     ",
 };
 
 const char* name() {
@@ -60,8 +60,8 @@ const char* topics[TOPIC_NUMBER] = {
 
 #define RAND_LENGTH (20)
 const int rand_int[RAND_LENGTH] = {
-  16807, 15089, 44249, 3114, 46978, 56008, 36568, 2558, 12099, 1101, 39064,
-  15445, 4748, 56290, 54451, 14151, 14615, 16657, 50072, 18772
+  7, 33, 249, 48, 178, 8, 168, 158, 99, 45, 8, 245, 92, 34, 51, 151,
+  215, 1, 72, 116
 };
 
 int rand_index;
