@@ -6,47 +6,48 @@
 extern void main_cool_console();
 
 void run_next_process(ctx_t* ctx) {
-  rq_entry_t* edp = earliest_deadline_rq();
+  // get process with earliest virtual deadline
+  pid_t edp;
+  do {
+    edp = pop_earliest_deadline_rq();
+    if (edp == 0) {
+      kernel_write_error("No more tasks scheduled. System idle. FATAL.\n", 45);
+      return;
+    }
 
-  pcb_t* to_dispatch_pcb = pcb_of(edp->pid);
-  to_dispatch_pcb->deadline = edp->deadline;
-  to_dispatch_pcb->timeslice = edp->timeslice;
+    // only if the process is still alive
+  } while (NULL == pcb_of(edp));
 
-  dispatch_process(edp->pid, ctx);
-  remove_entry_rq(edp);
+  dispatch_process(edp, ctx);
 }
 
 void sched_fork(ctx_t* ctx) {
   pcb_t* parent = update_pcb_of_executing_process(ctx);
   pid_t child_pid = fork_process(parent);
+  int err = sched_process_rq(pcb_of(child_pid));
 
-  if (0 != child_pid) {
-    sched_process_rq(child_pid);
-
-    // return the child_pid to the parent
+  if (err) {
     ctx->gpr[0] = child_pid;
   }
-  else ctx->gpr[0] = -1;
+  else {
+    destroy_process(child_pid);
+
+    // return error code to the calling process otherwise
+    ctx->gpr[0] = ERROR_CODE;
+  }
 }
 
 int sched_terminate(pid_t pid_to_remove, ctx_t* ctx) {
   // halt and reschedule current process
   pcb_t* exec = pcb_of(interrupt_executing_process(ctx));
-  pid_t exec_pid = add_process_rq(exec->pid, exec->timeslice, exec->deadline);
-  if (exec_pid == 0) {
-    run_next_process(ctx);
-    return ERROR_CODE;
-  }
 
-  int error = destroy_process(pid_to_remove);
-  if (error) {
-    run_next_process(ctx);
-    return ERROR_CODE;
-  }
+  int err1 = add_process_rq(exec);
+  int err2 = destroy_process(pid_to_remove);
 
-  remove_pid_rq(pid_to_remove);
   run_next_process(ctx);
-  return 0;
+
+  if (err1 || err2) return ERROR_CODE;
+  else return 0;
 }
 
 /**
@@ -59,11 +60,14 @@ int sched_terminate(pid_t pid_to_remove, ctx_t* ctx) {
  */
 
 void sched_rst(ctx_t* ctx) {
-  pid_t p1 = create_process(0x50, (uint32_t) (&main_cool_console));
-  sched_process_rq(p1);
+  pid_t console_pid = create_process(0x50, (uint32_t) (&main_cool_console));
+
+  int err = sched_process_rq(pcb_of(console_pid));
+  if (err) {
+    kernel_write_error("System could not start console. FATAL.\n", 39);
+  }
 
   run_next_process(ctx);
-  return;
 }
 
 void sched_tick() {
@@ -89,8 +93,8 @@ void sched(ctx_t* ctx) {
   pcb_t* exec = pcb_of(interrupt_executing_process(ctx));
 
   // determines whether the call is made from the timer or from yield
-  if (exec->timeslice == 0) sched_process_rq(exec->pid);
-  else add_process_rq(exec->pid, exec->timeslice, exec->deadline);
+  if (exec->timeslice == 0) sched_process_rq(exec);
+  else add_process_rq(exec);
 
   run_next_process(ctx);
   return;

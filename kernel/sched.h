@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "kernel.h"
+#include "io.h"
 #include "process.h"
 #include "sched_bfs.h"
 

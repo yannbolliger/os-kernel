@@ -22,6 +22,10 @@ size_t uart_write(PL011_t* uart, const char* x, const size_t n) {
   return n;
 }
 
+void kernel_write_error(const char* x, const size_t n) {
+  uart_write(UART0, x, n);
+}
+
 int set_fd(const pid_t pid, const fd_t fd) {
   pcb_t* pcb = pcb_of(pid);
 
