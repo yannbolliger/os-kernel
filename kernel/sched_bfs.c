@@ -1,7 +1,30 @@
 
 #include "sched_bfs.h"
 
+typedef struct _rq_entry_t {
+  pid_t pid;
+  uint64_t deadline;
+} rq_entry_t;
+
+typedef struct {
+  rq_entry_t run_queue[PROCESS_MAX];
+  size_t tail;
+  uint64_t jiffies;
+} rq_t;
+
 rq_t global_rq = {0};
+
+int calculate_deadline(int user_prio) {
+
+  // calculate priority ratio
+  const int quotient = 128;
+  int ratio = quotient;
+  for (size_t i = 0; i < user_prio - MAX_USER_PRIO; i++) {
+    ratio = ratio * 11/10;
+  }
+
+  return global_rq.jiffies + (TIME_SLICE * ratio) / quotient;
+}
 
 int add_process_rq(pcb_t* pcb) {
   if (global_rq.tail == PROCESS_MAX || NULL == pcb) return ERROR_CODE;
@@ -10,7 +33,6 @@ int add_process_rq(pcb_t* pcb) {
 
   new_entry->pid       = pcb->pid;
   new_entry->deadline  = pcb->deadline;
-  new_entry->timeslice = pcb->timeslice;
 
   return 0;
 }
@@ -19,7 +41,7 @@ int sched_process_rq(pcb_t* pcb) {
   if (NULL == pcb) return ERROR_CODE;
 
   pcb->timeslice = TIME_SLICE;
-  pcb->deadline = global_rq.jiffies +TIME_SLICE * prio_ratio[pcb->user_prio];
+  pcb->deadline = calculate_deadline(pcb->user_prio);
 
   return add_process_rq(pcb);
 }

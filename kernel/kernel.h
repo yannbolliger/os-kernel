@@ -48,8 +48,6 @@ typedef struct {
   uint32_t lr;
 } ctx_t;
 
-#define R_OK (0x01)
-#define W_OK (0x10)
 
 /**
  * File descriptor entry for the per-process file descriptor table.
@@ -68,6 +66,7 @@ typedef struct {
   ctx_t ctx;
   uint64_t deadline;
   uint64_t timeslice;
+  int user_prio;
   uint32_t mem_base_addr;
   fd_t fd_table[OPEN_MAX];
 } pcb_t;

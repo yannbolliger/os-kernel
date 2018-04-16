@@ -26,6 +26,9 @@
 #define TIMER_CLOCK          (2^15)
 #define TIMER_INTERVAL_TICKS (TIMER_CLOCK/HZ)
 
+#define MAX_USER_PRIO        (-20)
+#define MIN_USER_PRIO        (20)
+
 /**
  * Scheduler calls
  */

@@ -13,6 +13,8 @@
 #include "PL011.h"
 #endif
 
+#define R_OK (0x01)
+#define W_OK (0x10)
 
 int set_fd(const pid_t pid, const fd_t fd);
 int io_read(const pid_t pid, const int fd, char* x, const size_t n);
