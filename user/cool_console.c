@@ -21,10 +21,10 @@ void cmd_help();
 
 #define COMMAND_NUMBER (4)
 fn_name_t commands[COMMAND_NUMBER] = {
-  { &cmd_execute,   "execute <program>",   "Execute one of the available programs."},
-  { &cmd_terminate, "terminate <pid>  ",   "Terminate the process."},
-  { &cmd_nice,      "nice <pid> <prio>",   "Change the priority of the process."},
-  { &cmd_help,      "help             ",   "Prints this message."},
+  { &cmd_execute,   "execute", " <program> : Execute one of the available programs."},
+  { &cmd_terminate, "terminate", " <pid>   : Terminate the process."},
+  { &cmd_nice,      "nice", " <pid> <prio> : Change the priority of the process."},
+  { &cmd_help,      "help", "              : Prints this message."},
 };
 
 /**
@@ -57,7 +57,7 @@ void* fn_load(fn_name_t* fn_names, size_t fn_number, char* x) {
 }
 
 void print_process_pid(pid_t pid) {
-  puts(" process with PID: ", 2);
+  puts(" process with PID: ", 19);
 
   char number[3] = {0};
   itoa(number, pid);
@@ -114,7 +114,6 @@ void cmd_help() {
 
   for (int i = 0; i < COMMAND_NUMBER; ++i) {
     puts(commands[i].name, PROGRAM_NAME_MAX);
-    puts(" : ", 3);
     puts(commands[i].desc, DESC_MAX);
     puts("\n", 1);
   }
