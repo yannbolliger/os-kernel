@@ -125,12 +125,9 @@ void cmd_nice() {
   pid_t pid = atoi(strtok(NULL, " "));
   int prio  = atoi(strtok(NULL, " "));
 
-  int err = kill(pid, prio);
+  nice(pid, prio);
 
-  if (err) puts("Failed to change", 16);
-  else puts("Changed", 7);
-
-  puts(" the nice value of", 18);
+  puts("Changed the nice value of", 25);
   print_process_pid(pid);
 }
 
