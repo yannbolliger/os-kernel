@@ -31,7 +31,7 @@ void configure_gic_rst() {
 
 int restart_on_fatal(int err_code) {
   if (err_code==FATAL_CODE)  {
-    kernel_write_error("FATAL. Restarting system.\n", 26);
+    kernel_write_error("\n\n\nFATAL. Restarting system.\n\n\n\n\n", 33);
 
     // the program never returns from the reset; it restarts the system
     lolevel_handler_rst();

@@ -11,7 +11,7 @@ int run_next_process(ctx_t* ctx) {
   do {
     edp = pop_earliest_deadline_rq();
     if (edp == 0) {
-      kernel_write_error("No more tasks scheduled. System idle. FATAL.\n", 45);
+      kernel_write_error("No more tasks scheduled. System idle.\n", 38);
       return FATAL_CODE;
     }
 
@@ -69,7 +69,7 @@ int sched_rst(ctx_t* ctx) {
 
   int err = sched_process_rq(pcb_of(console_pid));
   if (err) {
-    kernel_write_error("System could not start console. FATAL.\n", 39);
+    kernel_write_error("System could not start console.\n", 32);
     return FATAL_CODE;
   }
 
