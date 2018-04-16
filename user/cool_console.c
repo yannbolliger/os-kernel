@@ -16,13 +16,15 @@ typedef struct {
  */
 void cmd_execute();
 void cmd_terminate();
+void cmd_nice();
 void cmd_help();
 
-#define COMMAND_NUMBER (3)
+#define COMMAND_NUMBER (4)
 fn_name_t commands[COMMAND_NUMBER] = {
-  { &cmd_execute,   "execute",   "Execute one of the available programs."},
-  { &cmd_terminate, "terminate", "Terminate the process with the given PID."},
-  { &cmd_help,      "help",      "Prints this message."},
+  { &cmd_execute,   "execute <program>",   "Execute one of the available programs."},
+  { &cmd_terminate, "terminate <pid>  ",   "Terminate the process."},
+  { &cmd_nice,      "nice <pid> <prio>",   "Change the priority of the process."},
+  { &cmd_help,      "help             ",   "Prints this message."},
 };
 
 /**
@@ -54,10 +56,14 @@ void* fn_load(fn_name_t* fn_names, size_t fn_number, char* x) {
   return NULL;
 }
 
-void print_pid(pid_t pid) {
+void print_process_pid(pid_t pid) {
+  puts(" process with PID: ", 2);
+
   char number[3] = {0};
   itoa(number, pid);
   puts(number, 3);
+
+  puts(".\n", 2);
 }
 
 void cmd_execute() {
@@ -73,9 +79,8 @@ void cmd_execute() {
     }
     // parent informs shell user
     else if (pid > 0) {
-      puts("Started process with PID: ", 26);
-      print_pid(pid);
-      puts(".\n", 2);
+      puts("Started", 7);
+      print_process_pid(pid);
     }
     // error handling
     else {
@@ -94,11 +99,13 @@ void cmd_terminate() {
 
   int err = kill(pid, s);
 
-  if (err) puts("Failed to terminate the process.\n", 33);
+  if (err) {
+    puts("Failed to terminate", 19);
+    print_process_pid(pid);
+  }
   else {
-    puts("Terminated process with PID: ", 29);
-    print_pid(pid);
-    puts(".\n", 2);
+    puts("Terminated", 10);
+    print_process_pid(pid);
   }
 }
 
@@ -113,6 +120,19 @@ void cmd_help() {
   }
 
   puts("\n", 1);
+}
+
+void cmd_nice() {
+  pid_t pid = atoi(strtok(NULL, " "));
+  int prio  = atoi(strtok(NULL, " "));
+
+  int err = kill(pid, prio);
+
+  if (err) puts("Failed to change", 16);
+  else puts("Changed", 7);
+
+  puts(" the nice value of", 18);
+  print_process_pid(pid);
 }
 
 void main_cool_console () {
