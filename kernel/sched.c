@@ -26,7 +26,7 @@ void sched_fork(ctx_t* ctx) {
   pid_t child_pid = fork_process(parent);
   int err = sched_process_rq(pcb_of(child_pid));
 
-  if (err) {
+  if (!err) {
     ctx->gpr[0] = child_pid;
   }
   else {

@@ -79,7 +79,7 @@ void cmd_execute() {
     }
     // error handling
     else {
-      puts("Failed to start the process.\n", 25);
+      puts("Failed to start the process.\n", 29);
     }
   }
   // error handling
