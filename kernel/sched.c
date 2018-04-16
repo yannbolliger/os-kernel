@@ -99,10 +99,19 @@ int sched(ctx_t* ctx) {
   // determines whether the call is made from the timer or from yield
   int err = 0;
   if (exec->timeslice == 0) err = sched_process_rq(exec);
-  else err=add_process_rq(exec);
+  else err = add_process_rq(exec);
 
   int fatal = run_next_process(ctx);
 
   if (fatal) return FATAL_CODE;
   else return err;
+}
+
+void sched_nice(pid_t pid, int prio) {
+  if (prio < MAX_USER_PRIO || prio > MIN_USER_PRIO) return;
+
+  pcb_t* pcb = pcb_of(pid);
+  if (NULL == pcb) return;
+
+  pcb->user_prio = prio;
 }

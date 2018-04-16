@@ -179,6 +179,15 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
       break;
     }
 
+    // void nice(pid_t pid, int x);
+    case SYS_NICE: {
+      pid_t pid = ctx->gpr[0];
+      int prio = ctx->gpr[1];
+
+      sched_nice(pid, prio);
+      break;
+    }
+
     // unknown/unsupported
     default: {
       break;
