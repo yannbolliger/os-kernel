@@ -96,6 +96,37 @@ int add_process_rq_order_test() {
     pop_earliest_deadline_rq() == 2
     );
 
+  pcb_rst();
+  return 0;
+}
+
+int remove_pid_rq_test() {
+  remove_pid_rq(100);
+
+  pcb_t pcb1 = { .pid = 1, .deadline = 10};
+  pcb_t pcb2 = { .pid = 2, .deadline = 30};
+  pcb_t pcb3 = { .pid = 3, .deadline = 5};
+
+  add_process_rq(&pcb1);
+  add_process_rq(&pcb2);
+  add_process_rq(&pcb3);
+  remove_pid_rq(1);
+  remove_pid_rq(4);
+  remove_pid_rq(5);
+
+  _assert_message(
+    "Earliest deadline and remove correctly interleave",
+    pop_earliest_deadline_rq() == 3
+    );
+
+  remove_pid_rq(2);
+
+  _assert_message(
+    "Earliest deadline returns zero because empty",
+    pop_earliest_deadline_rq() == 0
+    );
+
+  pcb_rst();
   return 0;
 }
 
@@ -105,5 +136,6 @@ int all_tests_sched_bfs() {
   _verify(add_process_when_full_test);
   _verify(schedule_process_rq_test);
   _verify(add_process_rq_order_test);
+  _verify(remove_pid_rq_test);
   return 0;
 }

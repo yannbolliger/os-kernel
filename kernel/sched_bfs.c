@@ -75,10 +75,10 @@ void remove_pid_rq(pid_t pid_to_remove) {
   rq_entry_t* current = NULL;
 
   do {
-    rq_entry_t* current = &global_rq.run_queue[index++];
-  } while (index != global_rq.tail && current->pid != pid_to_remove);
+    current = &global_rq.run_queue[index++];
+  } while (index < global_rq.tail && current->pid != pid_to_remove);
 
-  remove_entry_rq(current);
+  if (current->pid == pid_to_remove) remove_entry_rq(current);
 }
 
 void sched_tick_rq() {
