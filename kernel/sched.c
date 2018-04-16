@@ -110,4 +110,6 @@ void sched_nice(pid_t pid, int prio) {
   if (NULL == pcb) return;
 
   pcb->user_prio = prio;
+  remove_pid_rq(pid);
+  sched_process_rq(pid);
 }
