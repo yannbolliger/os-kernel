@@ -1,7 +1,7 @@
 
 
-#ifndef __SCHEDULER_RQ_H
-#define __SCHEDULER_RQ_H
+#ifndef __SCHEDULER_BFS_H
+#define __SCHEDULER_BFS_H
 
 #include <stdbool.h>
 #include <stddef.h>

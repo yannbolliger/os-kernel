@@ -1,6 +1,6 @@
 
 #include "min_unit.h"
-#include "../kernel/sched_rq.h"
+#include "../kernel/sched_bfs.h"
 
 extern rq_t global_rq;
 
@@ -125,7 +125,7 @@ int add_process_rq_order_test() {
 }
 
 
-int all_tests_sched_rq() {
+int all_tests_sched_bfs() {
   _verify(add_process_rq_test);
   _verify(add_process_when_full_test);
   _verify(schedule_process_rq_test);

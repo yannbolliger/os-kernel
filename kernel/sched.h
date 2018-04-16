@@ -10,7 +10,7 @@
 
 #include "kernel.h"
 #include "process.h"
-#include "sched_rq.h"
+#include "sched_bfs.h"
 
 /**
  * Timer configuration
