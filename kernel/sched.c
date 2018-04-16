@@ -6,17 +6,12 @@
 extern void main_cool_console();
 
 int run_next_process(ctx_t* ctx) {
-  // get process with earliest virtual deadline
-  pid_t edp;
-  do {
-    edp = pop_earliest_deadline_rq();
-    if (edp == 0) {
-      kernel_write_error("No more tasks scheduled. System idle.\n", 38);
-      return FATAL_CODE;
-    }
+  pid_t edp = pop_earliest_deadline_rq();
 
-    // only if the process is still alive
-  } while (NULL == pcb_of(edp));
+  if (edp == 0) {
+    kernel_write_error("No more tasks scheduled. System idle.\n", 38);
+    return FATAL_CODE;
+  }
 
   dispatch_process(edp, ctx);
   return 0;
@@ -44,6 +39,7 @@ int sched_terminate(pid_t pid_to_remove, ctx_t* ctx) {
 
   int err1 = add_process_rq(exec);
   int err2 = destroy_process(pid_to_remove);
+  remove_pid_rq(pid_to_remove);
 
   int fatal = run_next_process(ctx);
 

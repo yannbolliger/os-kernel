@@ -70,6 +70,17 @@ pid_t pop_earliest_deadline_rq() {
   return pid;
 }
 
+void remove_pid_rq(pid_t pid_to_remove) {
+  size_t index = 0;
+  rq_entry_t* current = NULL;
+
+  do {
+    rq_entry_t* current = &global_rq.run_queue[index++];
+  } while (index != global_rq.tail && current->pid != pid_to_remove);
+
+  remove_entry_rq(current);
+}
+
 void sched_tick_rq() {
   global_rq.jiffies++;
 }
