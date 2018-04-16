@@ -8,7 +8,10 @@
 #include "kernel.h"
 #include "pipe.h"
 #include "process.h"
+
+#ifndef __TEST
 #include "PL011.h"
+#endif
 
 
 int set_fd(const pid_t pid, const fd_t fd);

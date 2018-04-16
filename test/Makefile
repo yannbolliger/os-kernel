@@ -6,8 +6,8 @@ all: min_unit
 TESTED_OBJECTS = ../kernel/sched.o ../kernel/sched_bfs.o ../kernel/process.o
 TEST_FILES = $(addsuffix _tests.o, $(basename $(notdir $(TESTED_OBJECTS))))
 
+CFLAGS = -D __TEST
 min_unit: min_unit.o $(TESTED_OBJECTS) $(TEST_FILES)
-
 
 
 # little macro to delete all object files

@@ -7,10 +7,9 @@
 /**
  * dummy declarations to fulfill sched.c requirements
  */
-void main_console() {
+void main_cool_console() {
   return;
 }
-
 
 
 /**
