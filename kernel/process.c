@@ -8,6 +8,11 @@ static inline size_t index_of(pid_t pid) {
   return (pid - 1 + PROCESS_MAX) % PROCESS_MAX;
 }
 
+void pcb_rst() {
+  pcb_table.max_pid = 0;
+  pcb_table.executing_pcb = NULL;
+}
+
 pid_t executing_process() {
   if (pcb_table.executing_pcb == NULL) return 0;
   else return pcb_table.executing_pcb->pid;

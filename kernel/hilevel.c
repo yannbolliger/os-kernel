@@ -29,6 +29,18 @@ void configure_gic_rst() {
   return;
 }
 
+int restart_on_fatal(int err_code) {
+  if (err_code==FATAL_CODE)  {
+    kernel_write_error("FATAL. Restarting system.\n", 26);
+
+    // the program never returns from the reset; it restarts the system
+    lolevel_handler_rst();
+  }
+
+  return err_code;
+}
+
+
 /**
  * Configure system at start
  *  - initialise timer for pre-emptive multitasking
@@ -38,7 +50,8 @@ void hilevel_handler_rst(ctx_t* ctx) {
   configure_timer_rst();
   configure_gic_rst();
 
-  sched_rst(ctx);
+  restart_on_fatal(sched_rst(ctx));
+  pipe_rst();
   int_enable_irq();
 
   return;
@@ -57,7 +70,7 @@ void hilevel_handler_irq(ctx_t* ctx) {
   if (id == GIC_SOURCE_TIMER0) {
     sched_tick();
 
-    if (sched_need_resched()) sched(ctx);
+    if (sched_need_resched()) restart_on_fatal(sched(ctx));
 
     // reset timer
     TIMER0->Timer1IntClr = 0x01;
@@ -80,7 +93,7 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
     // void yield()
     case SYS_YIELD: {
-      sched(ctx);
+      restart_on_fatal(sched(ctx));
       break;
     }
 
@@ -134,7 +147,7 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
     case SYS_EXIT: {
       int x = ctx->gpr[0];
 
-      sched_terminate(executing_process(), ctx);
+      restart_on_fatal(sched_terminate(executing_process(), ctx));
       break;
     }
 
@@ -144,7 +157,7 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
       int signal = ctx->gpr[1];
 
       // return error code
-      ctx->gpr[0] = sched_terminate(pid, ctx);
+      ctx->gpr[0] = restart_on_fatal(sched_terminate(pid, ctx));
       break;
     }
 

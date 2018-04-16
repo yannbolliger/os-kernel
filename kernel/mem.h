@@ -16,6 +16,8 @@
 #define MEM_BLOCK_SIZE (0x1000)
 #define MEM_BLOCK_NUMBER ((MEM_HI - MEM_LO)/(MEM_BLOCK_SIZE))
 
+void mem_rst();
+
 uint32_t mem_allocate(const size_t n_blocks);
 
 size_t   mem_deallocate(const uint32_t address, const size_t n_blocks);

@@ -24,6 +24,7 @@
 #define OPEN_MAX (64)
 
 #define ERROR_CODE (-1)
+#define FATAL_CODE (-10)
 
 /**
  * Types

@@ -5,20 +5,21 @@
 
 extern void main_cool_console();
 
-void run_next_process(ctx_t* ctx) {
+int run_next_process(ctx_t* ctx) {
   // get process with earliest virtual deadline
   pid_t edp;
   do {
     edp = pop_earliest_deadline_rq();
     if (edp == 0) {
       kernel_write_error("No more tasks scheduled. System idle. FATAL.\n", 45);
-      return;
+      return FATAL_CODE;
     }
 
     // only if the process is still alive
   } while (NULL == pcb_of(edp));
 
   dispatch_process(edp, ctx);
+  return 0;
 }
 
 void sched_fork(ctx_t* ctx) {
@@ -44,10 +45,10 @@ int sched_terminate(pid_t pid_to_remove, ctx_t* ctx) {
   int err1 = add_process_rq(exec);
   int err2 = destroy_process(pid_to_remove);
 
-  run_next_process(ctx);
+  int fatal = run_next_process(ctx);
 
-  if (err1 || err2) return ERROR_CODE;
-  else return 0;
+  if (fatal) return FATAL_CODE;
+  else return err1 || err2;
 }
 
 /**
@@ -59,21 +60,25 @@ int sched_terminate(pid_t pid_to_remove, ctx_t* ctx) {
  * - the PC and SP values matche the entry point and top of stack.
  */
 
-void sched_rst(ctx_t* ctx) {
+int sched_rst(ctx_t* ctx) {
+  mem_rst();
+  pcb_rst();
+  sched_bfs_rst();
+
   pid_t console_pid = create_process(0x50, (uint32_t) (&main_cool_console));
 
   int err = sched_process_rq(pcb_of(console_pid));
   if (err) {
     kernel_write_error("System could not start console. FATAL.\n", 39);
+    return FATAL_CODE;
   }
 
-  run_next_process(ctx);
+  return run_next_process(ctx);
 }
 
 void sched_tick() {
   pcb_of(executing_process())->timeslice--;
   sched_tick_rq();
-  return;
 }
 
 /**
@@ -89,13 +94,16 @@ int sched_need_resched() {
  * Scheduler main function
  * Preempt runnning process and dispatch the next process with the highest prio.
  */
-void sched(ctx_t* ctx) {
+int sched(ctx_t* ctx) {
   pcb_t* exec = pcb_of(interrupt_executing_process(ctx));
 
   // determines whether the call is made from the timer or from yield
-  if (exec->timeslice == 0) sched_process_rq(exec);
-  else add_process_rq(exec);
+  int err = 0;
+  if (exec->timeslice == 0) err = sched_process_rq(exec);
+  else err=add_process_rq(exec);
 
-  run_next_process(ctx);
-  return;
+  int fatal = run_next_process(ctx);
+
+  if (fatal) return FATAL_CODE;
+  else return err;
 }

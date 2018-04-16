@@ -3,10 +3,12 @@
 #include "pipe.h"
 
 
-
 pipe_t pipe_table[PIPE_MAX];
 size_t pipe_table_tail = 0;
 
+void pipe_rst() {
+  pipe_table_tail = 0;
+}
 
 int pipe_create(const pid_t pid, int* fd) {
   if (pipe_table_tail == PIPE_MAX) return ERROR_CODE;
@@ -15,6 +17,8 @@ int pipe_create(const pid_t pid, int* fd) {
   if (mem_base_addr == 0) return ERROR_CODE;
 
   pipe_t* pipe = &pipe_table[pipe_table_tail];
+  memset(pipe, 0, sizeof(pipe_t));
+
   pipe->mem_base_addr = mem_base_addr;
   pipe->head = 0;
   pipe->length = 0;

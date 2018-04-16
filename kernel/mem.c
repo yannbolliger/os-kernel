@@ -11,6 +11,10 @@
  */
 uint64_t mem_map[MEM_MAP_SIZE] = {0};
 
+void mem_rst() {
+  memset(mem_map, 0, sizeof(uint64_t) * MEM_MAP_SIZE);
+}
+
 int find_first_unset(const size_t start_index) {
 
   for (size_t int_index = start_index; int_index < MEM_MAP_SIZE; ++int_index) {

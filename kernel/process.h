@@ -15,6 +15,7 @@ typedef struct {
   pcb_t* executing_pcb;
 } pcb_table_t;
 
+void   pcb_rst();
 pcb_t* pcb_of(pid_t pid);
 
 pid_t executing_process();

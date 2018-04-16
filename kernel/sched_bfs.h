@@ -26,6 +26,7 @@ typedef struct {
   uint64_t jiffies;
 } rq_t;
 
+void sched_bfs_rst();
 int add_process_rq(pcb_t* pcb);
 int sched_process_rq(pcb_t* pcb);
 pid_t pop_earliest_deadline_rq();

@@ -5,6 +5,11 @@
 
 rq_t global_rq = {0};
 
+void sched_bfs_rst() {
+  global_rq.tail = 0;
+  global_rq.jiffies = 0;
+}
+
 int calculate_deadline(int user_prio) {
 
   // calculate priority ratio
@@ -21,6 +26,7 @@ int add_process_rq(pcb_t* pcb) {
   if (global_rq.tail == PROCESS_MAX || NULL == pcb) return ERROR_CODE;
 
   rq_entry_t* new_entry = &global_rq.run_queue[global_rq.tail++];
+  memset(new_entry, 0, sizeof(rq_entry_t));
 
   new_entry->pid       = pcb->pid;
   new_entry->deadline  = pcb->deadline;
