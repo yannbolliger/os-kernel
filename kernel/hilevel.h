@@ -11,7 +11,6 @@
 #include "GIC.h"
 #include "PL011.h"
 #include "SP804.h"
-#include "libc.h"
 
 // Include functionality relating to the   kernel.
 #include "lolevel.h"

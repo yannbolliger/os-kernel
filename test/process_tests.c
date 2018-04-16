@@ -22,11 +22,11 @@ uint32_t mem_allocate(size_t n) {
   return 0x10000000 + addr;
 }
 
-int io_close() {
+int io_close(const pid_t pid, const int fd) {
   return 0;
 }
 
-void pipe_fork() {
+void pipe_fork(pipe_t* pipe) {
   return;
 }
 

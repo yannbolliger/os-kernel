@@ -3,9 +3,9 @@
 #ifndef __KERNEL_H
 #define __KERNEL_H
 
-#include <stdint.h>
 
-#include "libc.h"
+#include "../user/libc.h"
+
 
 /**
  * KERNEL

@@ -11,7 +11,7 @@ void main_cool_console() {
   return;
 }
 
-void kernel_write_error() {
+void kernel_write_error(const char* x, const size_t n) {
   return;
 }
 
