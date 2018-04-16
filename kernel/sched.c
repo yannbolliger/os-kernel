@@ -104,12 +104,12 @@ int sched(ctx_t* ctx) {
 }
 
 void sched_nice(pid_t pid, int prio) {
-  if (prio < MAX_USER_PRIO || prio > MIN_USER_PRIO) return;
+  if (prio < MAX_USER_PRIO || prio > MIN_USER_PRIO) return;
 
   pcb_t* pcb = pcb_of(pid);
-  if (NULL == pcb) return;
+  if (NULL == pcb) return;
 
   pcb->user_prio = prio;
   remove_pid_rq(pid);
-  sched_process_rq(pid);
+  sched_process_rq(pcb);
 }

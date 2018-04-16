@@ -9,8 +9,7 @@ static inline size_t index_of(pid_t pid) {
 }
 
 void pcb_rst() {
-  pcb_table.max_pid = 0;
-  pcb_table.executing_pcb = NULL;
+  memset(&pcb_table, 0, sizeof(pcb_table_t));
 }
 
 pid_t executing_process() {

@@ -4,13 +4,6 @@
 
 extern rq_t global_rq;
 
-/**
- * Helpers
- */
-void dirty_reset_of_queue() {
-  global_rq.tail = 0;
-}
-
 
 /**
  * Tests
@@ -29,7 +22,7 @@ int add_process_rq_test() {
     global_rq.run_queue[tail].pid == pid_test
     );
 
-  dirty_reset_of_queue();
+  sched_bfs_rst();
   return 0;
 }
 
@@ -65,7 +58,7 @@ int add_process_when_full_test() {
     add_process_rq(&pcb) == 0
     );
 
-  dirty_reset_of_queue();
+  sched_bfs_rst();
   return 0;
 }
 
@@ -83,7 +76,7 @@ int schedule_process_rq_test() {
     global_rq.run_queue[index].deadline >= global_rq.jiffies + TIME_SLICE
     );
 
-  dirty_reset_of_queue();
+  sched_bfs_rst();
   return 0;
 }
 

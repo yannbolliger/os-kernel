@@ -31,18 +31,6 @@ void pipe_fork(pipe_t* pipe) {
 }
 
 /**
- * Helpers
- */
-
-void dirty_table_reset() {
-  pcb_table.max_pid = 0;
-  pcb_table.executing_pcb = NULL;
-  for (int i = 0; i < PROCESS_MAX; ++i) {
-    pcb_table.pcb[i].status = STATUS_TERMINATED;
-  }
-}
-
-/**
  * Tests
  */
 int executing_process_test() {
@@ -60,7 +48,7 @@ int executing_process_test() {
     STATUS_EXECUTING == pcb_of(p)->status
     );
 
-  dirty_table_reset();
+  pcb_rst();
   return 0;
 }
 
@@ -89,7 +77,7 @@ int pcb_of_test() {
     p4 == pcb_of(p4)->pid
     );
 
-  dirty_table_reset();
+  pcb_rst();
   return 0;
 }
 
@@ -115,7 +103,7 @@ int create_process_full_test() {
     0 == create_process(0, 0)
     );
 
-  dirty_table_reset();
+  pcb_rst();
   return 0;
 }
 
@@ -136,7 +124,7 @@ int fork_process_test() {
     parent->mem_base_addr != child->mem_base_addr
     );
 
-  dirty_table_reset();
+  pcb_rst();
   return 0;
 }
 
@@ -151,7 +139,7 @@ int destroy_process_test() {
     );
 
 
-  dirty_table_reset();
+  pcb_rst();
   return 0;
 }
 

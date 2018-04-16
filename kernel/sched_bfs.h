@@ -31,5 +31,6 @@ int add_process_rq(pcb_t* pcb);
 int sched_process_rq(pcb_t* pcb);
 pid_t pop_earliest_deadline_rq();
 void sched_tick_rq();
+void remove_pid_rq(pid_t pid);
 
 #endif
