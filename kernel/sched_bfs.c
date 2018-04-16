@@ -1,16 +1,7 @@
 
 #include "sched_bfs.h"
 
-typedef struct _rq_entry_t {
-  pid_t pid;
-  uint64_t deadline;
-} rq_entry_t;
 
-typedef struct {
-  rq_entry_t run_queue[PROCESS_MAX];
-  size_t tail;
-  uint64_t jiffies;
-} rq_t;
 
 rq_t global_rq = {0};
 

@@ -11,6 +11,9 @@ void main_cool_console() {
   return;
 }
 
+void kernel_write_error() {
+  return;
+}
 
 /**
  * TESTS
