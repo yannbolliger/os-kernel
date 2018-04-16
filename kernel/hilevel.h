@@ -6,7 +6,6 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
 // Include device definitions
 #include "GIC.h"

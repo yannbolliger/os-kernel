@@ -50,8 +50,10 @@ void hilevel_handler_rst(ctx_t* ctx) {
   configure_timer_rst();
   configure_gic_rst();
 
-  restart_on_fatal(sched_rst(ctx));
+  mem_rst();
   pipe_rst();
+  restart_on_fatal(sched_rst(ctx));
+
   int_enable_irq();
 
   return;

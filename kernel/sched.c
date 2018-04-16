@@ -61,7 +61,6 @@ int sched_terminate(pid_t pid_to_remove, ctx_t* ctx) {
  */
 
 int sched_rst(ctx_t* ctx) {
-  mem_rst();
   pcb_rst();
   sched_bfs_rst();
 
