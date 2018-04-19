@@ -17,13 +17,13 @@ size_t uart_read(PL011_t* uart, char* x, const size_t n) {
 
 size_t uart_write(PL011_t* uart, const char* x, const size_t n) {
   for (int i = 0; i < n; i++) {
-    PL011_putc(UART0, *x++, true);
+    PL011_putc(uart, *x++, true);
   }
   return n;
 }
 
 void kernel_write_error(const char* x, const size_t n) {
-  uart_write(UART0, x, n);
+  uart_write(STD_UART, x, n);
 }
 
 int set_fd(const pid_t pid, const fd_t fd) {
@@ -56,7 +56,7 @@ int io_read(const pid_t pid, const int fd, char* x, const size_t n) {
   }
 
   if (STDIN_FILENO == fd)
-    return uart_read(UART0, x, n);
+    return uart_read(STD_UART, x, n);
   else
     return pipe_read(fildes->file, x, n);
 }
@@ -70,7 +70,7 @@ int io_write(const pid_t pid, const int fd, const char* x, const size_t n) {
   if (STDIN_FILENO == fd || fildes->mode & W_OK == 0) return ERROR_CODE;
 
   if (STDOUT_FILENO == fd || STDERR_FILENO == fd)
-    return uart_write(UART0, x, n);
+    return uart_write(STD_UART, x, n);
   else
     return pipe_write(fildes->file, x, n);
 }

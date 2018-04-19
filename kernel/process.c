@@ -28,7 +28,7 @@ pcb_t* pcb_of(pid_t pid) {
   if (pid <= pcb_table.max_pid || pid > 0) {
     pcb_t* pcb = &pcb_table.pcb[index_of(pid)];
 
-    if (pcb->status != STATUS_TERMINATED && pcb->pid == pid) return pcb;
+    if (pcb->status != STATUS_INVALID && pcb->pid == pid) return pcb;
   }
   return NULL;
 }
@@ -40,9 +40,9 @@ pid_t get_next_pid() {
   do  {
     index++;
     next_pcb = &pcb_table.pcb[index_of(pcb_table.max_pid + index)];
-  } while (index < PROCESS_MAX && next_pcb->status != STATUS_TERMINATED);
+  } while (index < PROCESS_MAX && next_pcb->status != STATUS_INVALID);
 
-  if (next_pcb->status == STATUS_TERMINATED) return pcb_table.max_pid + index;
+  if (next_pcb->status == STATUS_INVALID) return pcb_table.max_pid + index;
   else return 0;
 }
 
@@ -92,7 +92,7 @@ int _destroy_process(pcb_t* pcb_to_remove) {
   }
 
   // discard pcb
-  pcb_to_remove->status = STATUS_TERMINATED;
+  pcb_to_remove->status = STATUS_INVALID;
   return 0;
 }
 

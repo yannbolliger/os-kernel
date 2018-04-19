@@ -1,4 +1,13 @@
 
+/**
+ * @file process.h
+ * @brief Manages the lolevel process handling. This involves keeping track
+ * of all the PCBs, map PIDs to PCBs, creting and destroying PCBs.
+ *
+ * @date April 2018
+ * @author Yann Bolliger
+ */
+
 
 #ifndef __PROCESS_H
 #define __PROCESS_H
@@ -14,6 +23,10 @@ typedef struct {
   pid_t max_pid;
   pcb_t* executing_pcb;
 } pcb_table_t;
+
+/**
+ * INTERFACE
+ */
 
 void   pcb_rst();
 pcb_t* pcb_of(pid_t pid);
