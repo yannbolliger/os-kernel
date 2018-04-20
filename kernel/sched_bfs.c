@@ -6,7 +6,7 @@
 rq_t global_rq;
 
 void sched_bfs_rst() {
-  memset(global_rq, 0, sizeof(rq_t));
+  memset(&global_rq, 0, sizeof(rq_t));
 }
 
 int calculate_deadline(int user_prio) {

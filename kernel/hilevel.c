@@ -16,8 +16,8 @@ void configure_mmu_pt() {
 
   // mask access
   T[0x700] &= ~0x08C00;
-  // set  access 0b001 => kernel only
-  T[0x700] |=  (1 << 10);
+  // set  access 0b110 => read-only for all
+  T[0x700] |=  0x08800;
 
   // configure and enable MMU
   mmu_set_ptr0(T);
@@ -66,6 +66,7 @@ int restart_on_fatal(int err_code) {
     kernel_write_error("\n\n\nFATAL. Restarting system.\n\n\n\n\n", 33);
 
     // the program never returns from the reset; it restarts the system
+    mmu_unable();
     lolevel_handler_rst();
   }
 
