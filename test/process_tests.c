@@ -8,18 +8,17 @@ extern pcb_table_t pcb_table;
 ctx_t ctx = {0};
 
 // faking these functions in order to only test process.c
-size_t mem_copy(uint32_t src, uint32_t dst, size_t n) {
-  return n;
+int page_copy(const size_t src, const size_t dst) {
+  return 0;
 }
 
-size_t mem_deallocate(uint32_t addr, size_t n) {
-  return n;
+int page_deallocate(size_t addr) {
+  return 0;
 }
 
-uint32_t addr = 0;
-uint32_t mem_allocate(size_t n) {
-  addr += 0x1000;
-  return 0x10000000 + addr;
+size_t stack_page_counter = 0x800;
+size_t page_allocate() {
+  return stack_page_counter++;
 }
 
 int io_close(const pid_t pid, const int fd) {
@@ -27,6 +26,10 @@ int io_close(const pid_t pid, const int fd) {
 }
 
 void pipe_fork(pipe_t* pipe) {
+  return;
+}
+
+void page_swap_stack(pcb_t* next_running_pcb) {
   return;
 }
 
@@ -119,9 +122,9 @@ int fork_process_test() {
     );
 
   _assert_message(
-    "Child and parent do NOT have the same sp and mem_base_addr",
-    parent->ctx.sp != child->ctx.sp &&
-    parent->mem_base_addr != child->mem_base_addr
+    "Child and parent have the same sp but not stack_page",
+    parent->ctx.sp == child->ctx.sp &&
+    parent->stack_page != child->stack_page
     );
 
   pcb_rst();

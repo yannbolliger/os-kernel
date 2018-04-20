@@ -13,7 +13,10 @@
 
 #include <string.h>
 
+#ifndef __TEST
 #include "MMU.h"
+#endif
+
 #include "kernel.h"
 #include "bitmap.h"
 
