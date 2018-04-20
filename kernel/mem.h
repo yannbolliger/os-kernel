@@ -7,6 +7,15 @@
  * @author Yann Bolliger
  */
 
+/**
+ * MEMORY
+ *
+ * Because we don't have a heap, the kernel needs to manage memory for tables,
+ * pipes etc. itself.
+ * The facilitate the task, this module can allocate/reserve memory blocks of
+ * size MEM_BLOCK_SIZE (4069B). It uses a bitmap to keep track of free blocks.
+ */
+
 #ifndef __MEM_H
 #define __MEM_H
 
