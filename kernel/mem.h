@@ -12,6 +12,7 @@
 
 #include <string.h>
 #include "kernel.h"
+#include "bitmap.h"
 
 /**
  * Memory boundaries
@@ -29,6 +30,16 @@
  */
 #define MEM_BLOCK_SIZE (0x1000)
 #define MEM_BLOCK_NUMBER ((MEM_HI - MEM_LO)/(MEM_BLOCK_SIZE))
+
+/**
+ * Page boundaries
+ *
+ * (ALSO UPDATE THESE IN THE LINKER SCRIPT!)
+ */
+#define PAGE_LO 0x703
+#define PAGE_HI 0x900
+
+#define PAGE_TOTAL_NUMBER (PAGE_HI - PAGE_LO)
 
 
 /**
