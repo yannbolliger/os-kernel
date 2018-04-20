@@ -21,9 +21,6 @@
 /**
  * INTERFACE
  */
-
-
-
  int find_first_unset(const uint64_t* map, const size_t size, const size_t start_index);
 
  int test_bit(const uint64_t* map, size_t index);

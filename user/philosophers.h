@@ -2,11 +2,11 @@
 /**
  * Dining philosophers
  * --
- * This program solves the known problem of the "dining philosophers".
- * It uses POSIX unnamed pipes and forks in order to acheive this.
- * As the OS kernel by Yann Bolliger conforms to the minimal subset of POSIX
- * for these commands, the program is compileable and runnable on POSIX as
- * well as on the OS kernel by Yann Bolliger.
+ * This program solves the known problem of the "dining philosophers". It uses
+ * POSIX unnamed pipes and forks in order to achieve this. As the OS kernel by
+ * Yann Bolliger conforms to the minimal subset of POSIX for these commands, the
+ * program is compileable and runnable on POSIX as well as on the OS kernel by
+ * Yann Bolliger.
  *
  * The only thing you need that changes are the includes below and the linking.
  */
