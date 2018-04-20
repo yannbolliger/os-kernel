@@ -20,7 +20,7 @@
  * platform. They stem from the definitions in the linker script.
  * (ALSO UPDATE THESE IN THE LINKER SCRIPT!)
  */
-#define MEM_LO 0x700A0000
+#define MEM_LO 0x70100000
 #define MEM_HI 0x90000000
 
 /**

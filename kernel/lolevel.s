@@ -1,10 +1,3 @@
-/* Copyright (C) 2017 Daniel Page <csdsp@bristol.ac.uk>
- *
- * Use of this source code is restricted per the CC BY-NC-ND license, a copy of
- * which can be found via http://creativecommons.org (and should be included as
- * LICENSE.txt within the associated archive or repository).
- */
-
 /* Each of the following is a low-level interrupt handler: each one is
  * tasked with handling a different interrupt type, and acts as a sort
  * of wrapper around a high-level, C-based handler.
@@ -12,6 +5,8 @@
 
 .global lolevel_handler_rst
 .global lolevel_handler_irq
+.global lolevel_handler_pab
+.global lolevel_handler_dab
 .global lolevel_handler_svc
 
 lolevel_handler_rst:
@@ -19,6 +14,8 @@ lolevel_handler_rst:
 
     msr   cpsr, #0xD2             @ enter IRQ mode with IRQ and FIQ interrupts disabled
     ldr   sp, =tos_irq            @ initialise IRQ mode stack
+    msr   cpsr, #0xD7             @ enter ABT mode with IRQ and FIQ interrupts disabled
+    ldr   sp, =tos_abt            @ initialise ABT mode stack
     msr   cpsr, #0xD3             @ enter SVC mode with IRQ and FIQ interrupts disabled
     ldr   sp, =tos_svc            @ initialise SVC mode stack
 
@@ -65,4 +62,23 @@ lolevel_handler_svc:
     msr   spsr, r0                @ move     USR mode        CPSR
     ldmia sp, { r0-r12, sp, lr }^ @ restore  USR mode registers
     add   sp, sp, #60             @ update   SVC mode SP
+    movs  pc, lr                  @ return from interrupt
+
+
+lolevel_handler_pab:
+    sub   lr, lr, #4              @ correct return address
+    stmfd sp!, { r0-r3, ip, lr }  @ save    caller-save registers
+
+    bl    hilevel_handler_pab     @ invoke high-level C function
+
+    ldmfd sp!, { r0-r3, ip, lr }  @ restore caller-save registers
+    movs  pc, lr                  @ return from interrupt
+
+lolevel_handler_dab:
+    sub   lr, lr, #8              @ correct return address
+    stmfd sp!, { r0-r3, ip, lr }  @ save    caller-save registers
+
+    bl    hilevel_handler_dab     @ invoke high-level C function
+
+    ldmfd sp!, { r0-r3, ip, lr }  @ restore caller-save registers
     movs  pc, lr                  @ return from interrupt

@@ -12,16 +12,16 @@ SECTIONS {
   /* allocate stack for irq mode     */
   .       = . + 0x00001000;
   tos_irq = .;
+  /* allocate stack for abt mode     */
+  .       = . + 0x00001000;
+  tos_abt = .;
   /* allocate stack for svc mode     */
   .       = . + 0x00001000;
   tos_svc = .;
 
-  /*
-  * Memory region that is managed by the kernel and may be allocated to user
-  * processes. (MUST CORRESPOND WITH LIMITS in mem.h)
-  */
+
   end_of_fixed_mem = .;
-  .  = 0x700A0000;
+  .  = 0x70100000;
   mem_lo = .;
   . = 0x90000000;
   mem_hi = .;

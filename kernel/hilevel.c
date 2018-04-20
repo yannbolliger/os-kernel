@@ -11,8 +11,13 @@ pte_t T[4096] __attribute__ ((aligned (1 << 14)));
 void configure_mmu_pt() {
 
   for (int i = 0; i < 4096; i++) {
-    T[i] = ((pte_t)(i) << 20) | 0x00C02;
+    T[i] = ((pte_t)(i) << 20) | 0x00C22;
   }
+
+  // mask access
+  T[0x700] &= ~0x08C00;
+  // set  access 0b001 => kernel only
+  T[0x700] |=  (1 << 10);
 
   // configure and enable MMU
   mmu_set_ptr0(T);
@@ -57,7 +62,7 @@ void configure_gic_rst() {
 }
 
 int restart_on_fatal(int err_code) {
-  if (err_code==FATAL_CODE)  {
+  if (err_code == FATAL_CODE)  {
     kernel_write_error("\n\n\nFATAL. Restarting system.\n\n\n\n\n", 33);
 
     // the program never returns from the reset; it restarts the system
@@ -226,9 +231,13 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 }
 
 void hilevel_handler_pab() {
+  kernel_write_error("Pre-fetch abort excpetion.\n", 27);
+  restart_on_fatal(FATAL_CODE);
   return;
 }
 
 void hilevel_handler_dab() {
+  kernel_write_error("Data abort excpetion.\n", 22);
+  restart_on_fatal(FATAL_CODE);
   return;
 }
