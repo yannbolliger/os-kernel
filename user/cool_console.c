@@ -38,8 +38,9 @@ extern void main_pipe1();
 extern void main_pipe2();
 extern void main_philosophers();
 extern void main_stackoverflow();
+extern void main_kernelreader();
 
-#define PROGRAM_NUMBER (7)
+#define PROGRAM_NUMBER (8)
 const fn_name_t programs[PROGRAM_NUMBER] = {
   { &main_P3, "P3", "" },
   { &main_P4, "P4", "" },
@@ -48,6 +49,7 @@ const fn_name_t programs[PROGRAM_NUMBER] = {
   { &main_pipe2, "pipe2", "" },
   { &main_philosophers, "philosophers", "" },
   { &main_stackoverflow, "stackoverflow", "" },
+  { &main_kernelreader, "kernelreader", "" },
 };
 
 void* fn_load(const fn_name_t* fn_names, size_t fn_number, char* x) {
