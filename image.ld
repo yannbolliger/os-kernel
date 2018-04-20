@@ -25,6 +25,9 @@ SECTIONS {
   /* allocate stack for svc mode     */
   .       = . + 0x00001000;
   tos_svc = .;
+  /* Pseudo-heap: kernel managed/owned memory */
+  .  = 0x701A0000;
+  mem_lo = .;
 
 
 
@@ -43,4 +46,5 @@ SECTIONS {
   . = 0x90000000;
   mem_hi = .;
 
+    ASSERT((tos_svc < mem_lo), "Error: Too little data/bss memory in kernel page")
 }

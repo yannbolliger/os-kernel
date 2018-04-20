@@ -21,14 +21,14 @@
  * platform. They stem from the definitions in the linker script.
  * (ALSO UPDATE THESE IN THE LINKER SCRIPT!)
  */
-#define MEM_LO 0x70300000
-#define MEM_HI 0x90000000
+#define MEM_LO 0x701A0000
+#define MEM_HI 0x70200000
 
 /**
  * The smallest unit of memory that is managed.
  * Contigous blocks can be allocated or deallocated.
  */
-#define MEM_BLOCK_SIZE (0x1000)
+#define MEM_BLOCK_SIZE   (0x1000)
 #define MEM_BLOCK_NUMBER ((MEM_HI - MEM_LO)/(MEM_BLOCK_SIZE))
 
 /**
@@ -36,10 +36,11 @@
  *
  * (ALSO UPDATE THESE IN THE LINKER SCRIPT!)
  */
-#define PAGE_LO 0x703
-#define PAGE_HI 0x900
+#define PAGE_LO 0x70300000
+#define PAGE_HI 0x90000000
 
-#define PAGE_TOTAL_NUMBER (PAGE_HI - PAGE_LO)
+#define PAGE_SIZE         (1 << 20)
+#define PAGE_TOTAL_NUMBER ((PAGE_HI - PAGE_LO)/PAGE_SIZE)
 
 
 /**
