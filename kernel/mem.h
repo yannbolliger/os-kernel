@@ -61,4 +61,14 @@ static inline uint32_t mem_block_addr_end(uint32_t addr_start) {
   return addr_start + MEM_BLOCK_SIZE - 1;
 }
 
+static inline uint32_t page_addr_end(uint32_t addr_start) {
+  return addr_start + PAGE_SIZE - 1;
+}
+
+uint32_t page_allocate();
+
+int page_deallocate(const uint32_t address);
+
+int page_copy(const uint32_t src_addr, const uint32_t dst_addr);
+
 #endif

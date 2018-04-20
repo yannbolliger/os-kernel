@@ -183,7 +183,7 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
         // dirty reset of stack
         pcb_t* exec = update_pcb_of_executing_process(ctx);
-        ctx->sp = mem_block_addr_end(exec->mem_base_addr);
+        ctx->sp = page_addr_end(exec->page_base_addr);
       }
       break;
     }
