@@ -33,6 +33,23 @@ void sched_fork(ctx_t* ctx) {
   }
 }
 
+void sched_exec(ctx_t* ctx) {
+  if (0 == ctx->gpr[0]) {
+    // return -1 and do nothing else
+    ctx->gpr[0] = -1;
+  }
+  else {
+    // PC = x (PC goes where the pointer points at)
+    ctx->pc = ctx->gpr[0];
+    ctx->lr = 0;
+    memset(ctx->gpr, 0, sizeof(ctx->gpr));
+
+    // dirty reset of stack
+    pcb_t* exec = update_pcb_of_executing_process(ctx);
+    ctx->sp = TOS_USER;
+  }
+}
+
 int sched_terminate(pid_t pid_to_remove, ctx_t* ctx) {
   // halt and reschedule current process
   pcb_t* exec = pcb_of(interrupt_executing_process(ctx));

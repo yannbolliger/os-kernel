@@ -10,7 +10,7 @@ pte_t T[4096] __attribute__ ((aligned (1 << 14)));
 
 void configure_mmu_pt() {
 
-  for (int i = 0; i < 4096; i++) {
+  for (int i = 0; i < 0x703; i++) {
     T[i] = ((pte_t)(i) << 20) | 0x00C22;
   }
 
@@ -26,6 +26,21 @@ void configure_mmu_pt() {
   T[0x701] &= ~0x08C00;
   // set  access 0b010 => kernel RW, no access for user
   T[0x701] |=  0x00400;
+
+  // General data (LIBC) page 702
+  // mask access
+  T[0x702] &= ~0x08C00;
+  // set  access 0b011 => RW for all
+  T[0x702] |=  0x00C00;
+
+  for (int i = 0x703; i < 4096; i++) {
+    T[i] = ((pte_t)(i) << 20) | 0x00422;
+  }
+
+  // Virtual stack page 0xFFF
+  // map to 0x703 (for main_cool_console)
+  // set  access 0b011 => RW for all
+  T[0xFFF] =  0x70300C22;
 
 
   // configure and enable MMU
@@ -170,21 +185,7 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
 
     // void exec(const void* x)
     case SYS_EXEC: {
-      // check for NULL pointer argument
-      if (0 == ctx->gpr[0]) {
-        // return -1 and do nothing else
-        ctx->gpr[0] = -1;
-      }
-      else {
-        // PC = x (PC goes where the pointer points at)
-        ctx->pc = ctx->gpr[0];
-        ctx->lr = 0;
-        memset(ctx->gpr, 0, sizeof(ctx->gpr));
-
-        // dirty reset of stack
-        pcb_t* exec = update_pcb_of_executing_process(ctx);
-        ctx->sp = page_addr_end(exec->page_base_addr);
-      }
+      sched_exec(ctx);
       break;
     }
 

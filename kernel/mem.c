@@ -20,16 +20,16 @@ void mem_rst() {
   memset(page_map, 0, sizeof(uint64_t) * PAGE_MAP_SIZE);
 }
 
-uint32_t page_allocate() {
+size_t page_allocate() {
   int index = find_first_unset(page_map, PAGE_MAP_SIZE, 0);
   if (index == -1) return 0;
 
   set_bit(page_map, index);
-  return index * PAGE_SIZE + PAGE_LO;
+  return index + PAGE_LO;
 }
 
-int page_deallocate(const uint32_t address) {
-  const size_t index = (address - PAGE_LO) / PAGE_SIZE;
+int page_deallocate(const size_t page) {
+  const size_t index = (page - PAGE_LO);
 
   if (!test_bit(page_map, index)) return ERROR_CODE;
 
@@ -37,10 +37,10 @@ int page_deallocate(const uint32_t address) {
   return 0;
 }
 
-int page_copy(const uint32_t src_addr, const uint32_t dst_addr) {
+int page_copy(const size_t src_page, const size_t dst_page) {
 
-  const size_t src_index = (src_addr - PAGE_LO) / PAGE_SIZE;
-  const size_t dst_index = (dst_addr - PAGE_LO) / PAGE_SIZE;
+  const size_t src_index = (src_page - PAGE_LO);
+  const size_t dst_index = (dst_page - PAGE_LO);
 
   // check that all involved memory is allocated
   if (!test_bit(page_map, src_index) ||
@@ -48,7 +48,7 @@ int page_copy(const uint32_t src_addr, const uint32_t dst_addr) {
       src_index == dst_index)
     return ERROR_CODE;
 
-  memcpy((void *) dst_addr, (void *) src_addr, PAGE_SIZE);
+  memcpy((void *) (dst_page*PAGE_SIZE), (void *) (src_page*PAGE_SIZE), PAGE_SIZE);
   return 0;
 }
 

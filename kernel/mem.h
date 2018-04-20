@@ -36,11 +36,11 @@
  *
  * (ALSO UPDATE THESE IN THE LINKER SCRIPT!)
  */
-#define PAGE_LO 0x70300000
-#define PAGE_HI 0x90000000
+#define PAGE_LO 0x703
+#define PAGE_HI 0x900
 
 #define PAGE_SIZE         (1 << 20)
-#define PAGE_TOTAL_NUMBER ((PAGE_HI - PAGE_LO)/PAGE_SIZE)
+#define PAGE_TOTAL_NUMBER (PAGE_HI - PAGE_LO)
 
 
 /**
@@ -65,10 +65,10 @@ static inline uint32_t page_addr_end(uint32_t addr_start) {
   return addr_start + PAGE_SIZE - 1;
 }
 
-uint32_t page_allocate();
+size_t page_allocate();
 
-int page_deallocate(const uint32_t address);
+int page_deallocate(const size_t page);
 
-int page_copy(const uint32_t src_addr, const uint32_t dst_addr);
+int page_copy(const size_t src_page, const size_t dst_page);
 
 #endif

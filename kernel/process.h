@@ -17,6 +17,7 @@
 #include "io.h"
 #include "pipe.h"
 
+#define TOS_USER (0xFFFFFFFF - 1)
 
 typedef struct {
   pcb_t pcb[PROCESS_MAX];

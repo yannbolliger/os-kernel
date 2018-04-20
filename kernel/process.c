@@ -51,8 +51,8 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
   if (pid == 0) return 0;
 
   // check if memory available
-  uint32_t stack_base = page_allocate();
-  if (stack_base == 0) return 0;
+  uint32_t stack_page_number = page_allocate();
+  if (stack_page_number == 0) return 0;
 
   // reset pcb
   pcb_t* pcb = &pcb_table.pcb[index_of(pid)];
@@ -66,10 +66,10 @@ pid_t create_process(uint32_t cpsr, uint32_t pc) {
   pcb->ctx.cpsr = cpsr;
   pcb->ctx.pc   = pc;
   // stack grows downwards
-  pcb->ctx.sp   = page_addr_end(stack_base);
+  pcb->ctx.sp   = TOS_USER;
 
   pcb->status   = STATUS_READY;
-  pcb->page_base_addr  = stack_base;
+  pcb->stack_page = stack_page_number;
 
   return pcb->pid;
 }
@@ -83,7 +83,7 @@ int _destroy_process(pcb_t* pcb_to_remove) {
       pcb_to_remove->pid == executing_process()) return ERROR_CODE;
 
   // free stack memory
-  int err = page_deallocate(pcb_to_remove->page_base_addr);
+  int err = page_deallocate(pcb_to_remove->stack_page);
   if (err) return ERROR_CODE;
 
   // close all open fds
@@ -108,14 +108,12 @@ pid_t fork_process(pcb_t* const parent) {
   if (child_pid == 0 || NULL == child) return 0;
 
   // replicate context
-  uint32_t child_sp_backup = child->ctx.sp;
   child->ctx = parent->ctx;
 
   // set return value and different sp
   child->ctx.gpr[0] = 0;
-  child->ctx.sp = child_sp_backup;
 
-  int err = page_copy(parent->page_base_addr, child->page_base_addr);
+  int err = page_copy(parent->stack_page, child->stack_page);
   if (err) {
     _destroy_process(child);
     return 0;

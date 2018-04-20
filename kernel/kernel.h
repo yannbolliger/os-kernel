@@ -148,7 +148,7 @@ typedef struct {
   uint64_t deadline;
   uint64_t timeslice;
   int user_prio;
-  uint32_t page_base_addr;
+  uint32_t stack_page;
   fd_t fd_table[OPEN_MAX];
 } pcb_t;
 
