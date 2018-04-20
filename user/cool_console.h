@@ -14,7 +14,7 @@
 /**
  * Import these functions from the original console.c
  */
-extern void puts(char* x, int n);
+extern void puts(const char* x, int n);
 extern void gets(char* x, int n);
 
 #endif

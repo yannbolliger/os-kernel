@@ -20,7 +20,7 @@ void cmd_nice();
 void cmd_help();
 
 #define COMMAND_NUMBER (4)
-fn_name_t commands[COMMAND_NUMBER] = {
+const fn_name_t commands[COMMAND_NUMBER] = {
   { &cmd_execute,   "execute", " <program> : Execute one of the available programs."},
   { &cmd_terminate, "terminate", " <pid>   : Terminate the process."},
   { &cmd_nice,      "nice", " <pid> <prio> : Change the priority of the process."},
@@ -39,7 +39,7 @@ extern void main_pipe2();
 extern void main_philosophers();
 
 #define PROGRAM_NUMBER (6)
-fn_name_t programs[PROGRAM_NUMBER] = {
+const fn_name_t programs[PROGRAM_NUMBER] = {
   { &main_P3, "P3", "" },
   { &main_P4, "P4", "" },
   { &main_P5, "P5", "" },
@@ -48,7 +48,7 @@ fn_name_t programs[PROGRAM_NUMBER] = {
   { &main_philosophers, "philosophers", "" },
 };
 
-void* fn_load(fn_name_t* fn_names, size_t fn_number, char* x) {
+void* fn_load(const fn_name_t* fn_names, size_t fn_number, char* x) {
   for (int i = 0; i < fn_number; ++i) {
     if (0 == strcmp(x, fn_names[i].name))
       return fn_names[i].fn;
