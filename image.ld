@@ -27,7 +27,7 @@ SECTIONS {
   tos_svc = .;
 
 
-  /* USER memmory PAGES 0x702 and above */
+  /* USER memory PAGES 0x702 and above */
   end_of_fixed_mem = .;
   .  = 0x70200000;
   mem_lo = .;

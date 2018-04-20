@@ -14,10 +14,19 @@ void configure_mmu_pt() {
     T[i] = ((pte_t)(i) << 20) | 0x00C22;
   }
 
+  // Protect page 700
   // mask access
   T[0x700] &= ~0x08C00;
   // set  access 0b110 => read-only for all
   T[0x700] |=  0x08800;
+
+
+  // Protect page 701
+  // mask access
+  T[0x701] &= ~0x08C00;
+  // set  access 0b001 => kernel RW, no access for user
+  T[0x701] |=  0x00400;
+
 
   // configure and enable MMU
   mmu_set_ptr0(T);
