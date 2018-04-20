@@ -187,14 +187,27 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
   return;
 }
 
-void hilevel_handler_pab() {
-  kernel_write_error("Pre-fetch abort excpetion.\n", 27);
-  restart_on_fatal(FATAL_CODE);
+void terminate_mem_fault_process(ctx_t* ctx) {
+  kernel_write_error("'SEGV': Terminating faulting process.\n", 30);
+
+  restart_on_fatal(sched_terminate(executing_process(), ctx));
   return;
 }
 
-void hilevel_handler_dab() {
+/**
+ * If memory faults happen, we know it is a process's fault because the
+ * kernel can read everywhere (cf. page table), except for the text page.
+ * We therefore assume the current process tries to access forbidden memory
+ * and therefore terminate it.
+ */
+void hilevel_handler_pab(ctx_t* ctx) {
+  kernel_write_error("Pre-fetch abort excpetion.\n", 27);
+  terminate_mem_fault_process(ctx);
+  return;
+}
+
+void hilevel_handler_dab(ctx_t* ctx) {
   kernel_write_error("Data abort excpetion.\n", 22);
-  restart_on_fatal(FATAL_CODE);
+  terminate_mem_fault_process(ctx);
   return;
 }

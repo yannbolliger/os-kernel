@@ -30,6 +30,7 @@ lolevel_handler_rst:
     add   sp, sp, #60             @ update   SVC mode SP
     movs  pc, lr                  @ return from interrupt
 
+
 lolevel_handler_irq:
     sub   lr, lr, #4              @ correct return address
     sub   sp, sp, #60             @ update   IRQ mode stack
@@ -67,18 +68,32 @@ lolevel_handler_svc:
 
 lolevel_handler_pab:
     sub   lr, lr, #4              @ correct return address
-    stmfd sp!, { r0-r3, ip, lr }  @ save    caller-save registers
+    sub   sp, sp, #60             @ update   IRQ mode stack
+    stmia sp, { r0-r12, sp, lr }^ @ preserve USR registers
+    mrs   r0, spsr                @ move     USR        CPSR
+    stmdb sp!, { r0, lr }         @ store    USR PC and CPSR
 
+    mov   r0, sp                  @ set    high-level C function arg. = SP
     bl    hilevel_handler_pab     @ invoke high-level C function
 
-    ldmfd sp!, { r0-r3, ip, lr }  @ restore caller-save registers
+    ldmia sp!, { r0, lr }         @ load     USR mode PC and CPSR
+    msr   spsr, r0                @ move     USR mode        CPSR
+    ldmia sp, { r0-r12, sp, lr }^ @ restore  USR mode registers
+    add   sp, sp, #60             @ update   SVC mode SP
     movs  pc, lr                  @ return from interrupt
 
 lolevel_handler_dab:
     sub   lr, lr, #8              @ correct return address
-    stmfd sp!, { r0-r3, ip, lr }  @ save    caller-save registers
+    sub   sp, sp, #60             @ update   IRQ mode stack
+    stmia sp, { r0-r12, sp, lr }^ @ preserve USR registers
+    mrs   r0, spsr                @ move     USR        CPSR
+    stmdb sp!, { r0, lr }         @ store    USR PC and CPSR
 
+    mov   r0, sp                  @ set    high-level C function arg. = SP
     bl    hilevel_handler_dab     @ invoke high-level C function
 
-    ldmfd sp!, { r0-r3, ip, lr }  @ restore caller-save registers
+    ldmia sp!, { r0, lr }         @ load     USR mode PC and CPSR
+    msr   spsr, r0                @ move     USR mode        CPSR
+    ldmia sp, { r0-r12, sp, lr }^ @ restore  USR mode registers
+    add   sp, sp, #60             @ update   SVC mode SP
     movs  pc, lr                  @ return from interrupt
