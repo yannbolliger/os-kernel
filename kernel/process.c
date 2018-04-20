@@ -110,7 +110,7 @@ pid_t fork_process(pcb_t* const parent) {
   // replicate context
   child->ctx = parent->ctx;
 
-  // set return value and different sp
+  // set return value
   child->ctx.gpr[0] = 0;
 
   int err = page_copy(parent->stack_page, child->stack_page);
@@ -153,5 +153,6 @@ pid_t dispatch_process(pid_t pid, ctx_t* ctx) {
   dispatched->status = STATUS_EXECUTING;
   pcb_table.executing_pcb = dispatched;
 
+  page_swap_stack(dispatched);
   return dispatched->pid;
 }

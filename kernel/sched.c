@@ -45,8 +45,8 @@ void sched_exec(ctx_t* ctx) {
     memset(ctx->gpr, 0, sizeof(ctx->gpr));
 
     // dirty reset of stack
-    pcb_t* exec = update_pcb_of_executing_process(ctx);
     ctx->sp = TOS_USER;
+    update_pcb_of_executing_process(ctx);
   }
 }
 

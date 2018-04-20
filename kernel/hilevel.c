@@ -2,60 +2,6 @@
 #include "hilevel.h"
 
 
-/* T is a page table, which, for the 1MB pages (or sections) we use,
- * has 4096 entries: note the need to align T to a multiple of 16kB.
- */
-
-pte_t T[4096] __attribute__ ((aligned (1 << 14)));
-
-void configure_mmu_pt() {
-
-  for (int i = 0; i < 0x703; i++) {
-    T[i] = ((pte_t)(i) << 20) | 0x00C22;
-  }
-
-  // Protect page 700
-  // mask access
-  T[0x700] &= ~0x08C00;
-  // set  access 0b110 => read-only for all
-  T[0x700] |=  0x08800;
-
-
-  // Protect page 701
-  // mask access
-  T[0x701] &= ~0x08C00;
-  // set  access 0b010 => kernel RW, no access for user
-  T[0x701] |=  0x00400;
-
-  // General data (LIBC) page 702
-  // mask access
-  T[0x702] &= ~0x08C00;
-  // set  access 0b011 => RW for all
-  T[0x702] |=  0x00C00;
-
-  for (int i = 0x703; i < 4096; i++) {
-    T[i] = ((pte_t)(i) << 20) | 0x00422;
-  }
-
-  // Virtual stack page 0xFFF
-  // map to 0x703 (for main_cool_console)
-  // set  access 0b011 => RW for all
-  T[0xFFF] =  0x70300C22;
-
-
-  // configure and enable MMU
-  mmu_set_ptr0(T);
-
-  // set domain 0 to 11_{(2)} => manager (i.e., not checked)
-  mmu_set_dom(0, 0x3);
-
-  // set domain 1 to 01_{(2)} => client  (i.e.,     checked)
-  mmu_set_dom(1, 0x1);
-
-  mmu_enable();
-}
-
-
 
 void configure_timer_rst() {
   TIMER0->Timer1Load  = TIMER_INTERVAL_TICKS;
@@ -106,8 +52,8 @@ void hilevel_handler_rst(ctx_t* ctx) {
 
   configure_timer_rst();
   configure_gic_rst();
-  configure_mmu_pt();
 
+  page_rst();
   mem_rst();
   pipe_rst();
   restart_on_fatal(sched_rst(ctx));

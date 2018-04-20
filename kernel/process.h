@@ -14,10 +14,11 @@
 
 #include <string.h>
 #include "kernel.h"
+#include "page.h"
 #include "io.h"
 #include "pipe.h"
 
-#define TOS_USER (0xFFFFFFFF - 1)
+#define TOS_USER ((STACK_PAGE_USER << PAGE_SIZE_EXP) | (0xFFFFF - 1))
 
 typedef struct {
   pcb_t pcb[PROCESS_MAX];

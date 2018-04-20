@@ -17,10 +17,10 @@
 #include "lolevel.h"
 #include "int.h"
 #include "kernel.h"
+#include "page.h"
 #include "io.h"
 #include "sched.h"
 #include "pipe.h"
 
-typedef uint32_t pte_t;
 
 #endif
