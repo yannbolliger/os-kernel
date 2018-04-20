@@ -1,6 +1,33 @@
 
 #include "hilevel.h"
 
+
+/* T is a page table, which, for the 1MB pages (or sections) we use,
+ * has 4096 entries: note the need to align T to a multiple of 16kB.
+ */
+
+pte_t T[4096] __attribute__ ((aligned (1 << 14)));
+
+void configure_mmu_pt() {
+
+  for (int i = 0; i < 4096; i++) {
+    T[i] = ((pte_t)(i) << 20) | 0x00C02;
+  }
+
+  // configure and enable MMU
+  mmu_set_ptr0(T);
+
+  // set domain 0 to 11_{(2)} => manager (i.e., not checked)
+  mmu_set_dom(0, 0x3);
+
+  // set domain 1 to 01_{(2)} => client  (i.e.,     checked)
+  mmu_set_dom(1, 0x1);
+
+  mmu_enable();
+}
+
+
+
 void configure_timer_rst() {
   TIMER0->Timer1Load  = TIMER_INTERVAL_TICKS;
   // 32-bit timer
@@ -49,6 +76,7 @@ void hilevel_handler_rst(ctx_t* ctx) {
 
   configure_timer_rst();
   configure_gic_rst();
+  configure_mmu_pt();
 
   mem_rst();
   pipe_rst();
@@ -194,5 +222,13 @@ void hilevel_handler_svc(ctx_t* ctx, uint32_t svc_code) {
     }
   }
 
+  return;
+}
+
+void hilevel_handler_pab() {
+  return;
+}
+
+void hilevel_handler_dab() {
   return;
 }

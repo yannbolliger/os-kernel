@@ -20,4 +20,6 @@
 #include "sched.h"
 #include "pipe.h"
 
+typedef uint32_t pte_t;
+
 #endif
