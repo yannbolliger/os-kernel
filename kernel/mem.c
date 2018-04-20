@@ -9,7 +9,7 @@
  * Bitmap for allocation of the memory region between MEM_LO and MEM_HI.
  * LSB of mem_map[0] corresponds to memory block at address MEM_LO.
  */
-uint64_t mem_map[MEM_MAP_SIZE] = {0};
+uint64_t mem_map[MEM_MAP_SIZE];
 
 void mem_rst() {
   memset(mem_map, 0, sizeof(uint64_t) * MEM_MAP_SIZE);

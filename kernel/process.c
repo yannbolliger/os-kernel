@@ -2,7 +2,7 @@
 
 #include "process.h"
 
-pcb_table_t pcb_table = {0};
+pcb_table_t pcb_table;
 
 static inline size_t index_of(pid_t pid) {
   return (pid - 1 + PROCESS_MAX) % PROCESS_MAX;

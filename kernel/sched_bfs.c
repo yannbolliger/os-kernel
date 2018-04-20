@@ -3,11 +3,10 @@
 
 
 
-rq_t global_rq = {0};
+rq_t global_rq;
 
 void sched_bfs_rst() {
-  global_rq.tail = 0;
-  global_rq.jiffies = 0;
+  memset(global_rq, 0, sizeof(rq_t));
 }
 
 int calculate_deadline(int user_prio) {

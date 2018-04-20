@@ -4,7 +4,7 @@
 
 
 pipe_t pipe_table[PIPE_MAX];
-size_t pipe_table_tail = 0;
+size_t pipe_table_tail;
 
 void pipe_rst() {
   pipe_table_tail = 0;
