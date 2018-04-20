@@ -24,7 +24,7 @@ void configure_mmu_pt() {
   // Protect page 701
   // mask access
   T[0x701] &= ~0x08C00;
-  // set  access 0b001 => kernel RW, no access for user
+  // set  access 0b010 => kernel RW, no access for user
   T[0x701] |=  0x00400;
 
 

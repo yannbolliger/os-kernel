@@ -1,7 +1,7 @@
 /* Copyright (C) 2017 Daniel Page <csdsp@bristol.ac.uk>
  *
- * Use of this source code is restricted per the CC BY-NC-ND license, a copy of 
- * which can be found via http://creativecommons.org (and should be included as 
+ * Use of this source code is restricted per the CC BY-NC-ND license, a copy of
+ * which can be found via http://creativecommons.org (and should be included as
  * LICENSE.txt within the associated archive or repository).
  */
 
@@ -17,16 +17,16 @@
 /* The ARM PrimeCell UART (PL011) is documented at
  *
  * http://infocenter.arm.com/help/topic/com.arm.doc.ddi0183g/index.html
- * 
- * In particular, Section 3 explains the programmer's model, i.e., how to 
- * interact with it: this includes 
- * 
+ *
+ * In particular, Section 3 explains the programmer's model, i.e., how to
+ * interact with it: this includes
+ *
  * - Section 3.2, which summarises the device register layout in Table 3.1
  *   (including an offset from the device base address, in the memory map,
  *   for each register), and
  * - Section 3.3, which summarises the internal structure of each device
  *   register.
- * 
+ *
  * Note that the field identifiers used here follow the documentation in a
  * general sense, but with a some minor alterations to improve clarity and
  * consistency.
@@ -42,9 +42,9 @@ typedef struct {
           RW uint32_t   LPR;            // 0x0020          : low-power counter
           RW uint32_t  IBRD;            // 0x0024          : integer    baud rate
           RW uint32_t  FBRD;            // 0x0028          : fractional baud rate
-          RW uint32_t   LCR;            // 0x002C          : line control 
+          RW uint32_t   LCR;            // 0x002C          : line control
           RW uint32_t    CR;            // 0x0030          :      control
-          RW uint32_t  IFLS;            // 0x0034          :        interrupt level select 
+          RW uint32_t  IFLS;            // 0x0034          :        interrupt level select
           RW uint32_t  IMSC;            // 0x0038          :        interrupt mask
           RO uint32_t   RIS;            // 0x003C          : raw    interrupt status
           RO uint32_t   MIS;            // 0x0040          : masked interrupt status
@@ -62,17 +62,17 @@ typedef struct {
 } PL011_t;
 
 /* Per Table 4.2 (for example: the information is in several places) of
- * 
+ *
  * http://infocenter.arm.com/help/topic/com.arm.doc.dui0417d/index.html
- * 
+ *
  * we know the registers are mapped to fixed addresses in memory, so we
  * can just define a (structured) pointer to each one to support access.
  */
 
-extern PL011_t* UART0;
-extern PL011_t* UART1;
-extern PL011_t* UART2;
-extern PL011_t* UART3;
+extern PL011_t * const UART0;
+extern PL011_t * const UART1;
+extern PL011_t * const UART2;
+extern PL011_t * const UART3;
 
 // convert a hexadecimal character x into an integer 0 < r < 16
 extern int  xtoi( char x );
